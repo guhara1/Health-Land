@@ -214,7 +214,9 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 .hero .container::after {
   content: ""; display: block; margin-top: var(--sp-6);
   width: 100%; aspect-ratio: 16 / 9;
-  background: #0a1a16 url("/assets/hero.svg") center / cover no-repeat;
+  background:
+    url("/assets/hero.jpg") center / cover no-repeat,
+    #0a1a16 url("/assets/hero.svg") center / cover no-repeat;
   border: 1px solid var(--color-border); border-radius: var(--r-lg);
   box-shadow: var(--shadow-lg);
 }
