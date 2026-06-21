@@ -209,6 +209,23 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 .hero .eyebrow { color: var(--c-gold-400); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: var(--fs-xs); }
 .hero-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-6); }
 
+/* 히어로 대표 이미지 (16:9) — 모바일: 본문 아래 풀폭 / 데스크톱: 오른쪽 프레임 */
+.hero .container { position: relative; }
+.hero .container::after {
+  content: ""; display: block; margin-top: var(--sp-6);
+  width: 100%; aspect-ratio: 16 / 9;
+  background: #0a1a16 url("/assets/hero.svg") center / cover no-repeat;
+  border: 1px solid var(--color-border); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+}
+@media (min-width: 1101px) {
+  .hero .container { padding-right: calc(44% + var(--sp-6)); min-height: 400px; }
+  .hero .container::after {
+    position: absolute; top: 50%; right: 0; transform: translateY(-50%);
+    width: 44%; margin-top: 0;
+  }
+}
+
 /* ---------- 9. 섹션 / 그리드 ---------- */
 .section { padding: var(--sp-10) 0; }
 .section-tight { padding: var(--sp-8) 0; }
