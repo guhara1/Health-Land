@@ -145,13 +145,13 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
   background: linear-gradient(135deg, var(--c-green-700), var(--c-green-500));
   display: grid; place-items: center; color: var(--c-gold-300); font-size: 0.9rem; font-weight: 800;
 }
-.brand small { display: block; font-size: var(--fs-xs); font-weight: 500; color: var(--color-text-soft); letter-spacing: 0; }
+.brand small { display: block; font-size: var(--fs-xs); font-weight: 500; color: var(--color-text-soft); letter-spacing: 0; white-space: nowrap; }
 
 .nav { margin-left: auto; }
-.nav > ul { list-style: none; display: flex; align-items: center; gap: var(--sp-1); margin: 0; padding: 0; }
+.nav > ul { list-style: none; display: flex; align-items: center; flex-wrap: nowrap; gap: var(--sp-1); margin: 0; padding: 0; }
 .nav > ul > li > a {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: var(--sp-2) var(--sp-3); border-radius: var(--r-sm);
+  display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  padding: var(--sp-2) 10px; border-radius: var(--r-sm);
   font-weight: 600; font-size: var(--fs-sm); color: var(--color-text);
 }
 .nav > ul > li > a:hover,
@@ -198,7 +198,7 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 /* ---------- 6. 모바일 ---------- */
 .nav-toggle { display: none; margin-left: auto; background: none; border: 1px solid var(--color-border); border-radius: var(--r-sm); padding: 8px 10px; font-size: 1.2rem; color: var(--color-primary); cursor: pointer; }
 
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
   .nav-toggle { display: inline-flex; }
   .header-cta.desktop { display: none; }
   .nav {
@@ -225,7 +225,7 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 }
 
 .nav-backdrop { display: none; }
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
   .nav-backdrop.show { display: block; position: fixed; inset: 0; background: rgba(12,42,38,0.35); z-index: 90; }
 }
 
@@ -270,7 +270,7 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
-@media (max-width: 960px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1100px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
 
 .card {
@@ -372,7 +372,7 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 
 /* 모바일 하단 고정 전화 바 */
 .mobile-callbar { display: none; }
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
   .mobile-callbar {
     display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 95;
     background: var(--color-primary); color: var(--color-on-primary);

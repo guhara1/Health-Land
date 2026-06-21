@@ -6,7 +6,7 @@
   var backdrop = document.querySelector(".nav-backdrop");
 
   function isMobile() {
-    return window.matchMedia("(max-width: 960px)").matches;
+    return window.matchMedia("(max-width: 1100px)").matches;
   }
 
   if (toggle && nav) {
