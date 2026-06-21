@@ -13,11 +13,15 @@ import { buildRegionTree } from "./region-tree.mjs";
 import { incheon } from "../data/incheon.mjs";
 import { gyeonggi } from "../data/gyeonggi.mjs";
 import { busan, daegu, gwangju, daejeon, ulsan, sejong, jeju } from "../data/metros.mjs";
+import {
+  gangwon, chungbuk, chungnam, jeonbuk, jeonnam, gyeongbuk, gyeongnam,
+} from "../data/provinces.mjs";
 
 // 계층(시·구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
 const HIERARCHICAL = new Set([
   "seoul", "gyeonggi", "incheon",
   "busan", "daegu", "gwangju", "daejeon", "ulsan", "sejong", "jeju",
+  "gangwon", "chungbuk", "chungnam", "jeonbuk", "jeonnam", "gyeongbuk", "gyeongnam",
 ]);
 
 // 광역(구→동) 데이터 → 트리 루트
@@ -911,6 +915,13 @@ async function build() {
     ["울산", metroRoot(ulsan)],
     ["세종", provinceRoot(sejong)],
     ["제주", provinceRoot(jeju)],
+    ["강원", provinceRoot(gangwon)],
+    ["충북", provinceRoot(chungbuk)],
+    ["충남", provinceRoot(chungnam)],
+    ["전북", provinceRoot(jeonbuk)],
+    ["전남", provinceRoot(jeonnam)],
+    ["경북", provinceRoot(gyeongbuk)],
+    ["경남", provinceRoot(gyeongnam)],
   ]) {
     let mn = Infinity,
       mx = 0,
