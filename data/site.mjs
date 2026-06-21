@@ -3,11 +3,11 @@ export const site = {
   name: "헬스랜드",
   legalName: "헬스랜드 출장마사지 안내",
   tagline: "전국 출장마사지·홈타이 정보 안내 플랫폼",
-  // 검색 색인용 기본 도메인 (배포 시 환경변수 SITE_URL 로 교체, 기본값은 GitHub Pages)
-  baseUrl: process.env.SITE_URL || "https://health-land.pages.dev",
+  // 검색 색인용 기본 도메인 (배포 시 환경변수 SITE_URL 로 교체 가능)
+  baseUrl: process.env.SITE_URL || "https://massageintegration.com",
   phone: "0508-202-4711",
   phoneHref: "tel:0508-202-4711",
-  email: "help@health-land.co.kr",
+  email: "help@massageintegration.com",
   locale: "ko_KR",
   // E-E-A-T: 책임 저자/검수자 정보
   author: {
