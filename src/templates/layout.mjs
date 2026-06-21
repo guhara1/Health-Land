@@ -163,6 +163,13 @@ export function layout(o) {
   const ogImage = abs(o.ogImage || "/assets/og-default.svg");
   const desc = o.description || site.tagline;
 
+  // 히어로 대표 이미지는 CSS 배경(::after)이라 초기 문서에서 탐색되지 않는다.
+  // LCP 조기 발견 + 높은 우선순위 확보를 위해 히어로가 있는 페이지에만 preload 주입.
+  const hasHero = /class="hero"/.test(o.body || "");
+  const heroPreload = hasHero
+    ? `\n  <link rel="preload" as="image" href="/assets/hero.webp" type="image/webp" fetchpriority="high" />`
+    : "";
+
   // 조직(LocalBusiness) 기본 JSON-LD
   const orgLd = {
     "@context": "https://schema.org",
@@ -216,7 +223,7 @@ export function layout(o) {
   <meta property="og:locale" content="${site.locale}" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />${heroPreload}
   <script>document.documentElement.classList.add('js')</script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preload" as="style" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
