@@ -40,10 +40,11 @@ const crumb = (parts) => parts.map(([name, url]) => ({ name, url: url || "" }));
 // 역 타이틀·디스크립션 변형 (역명 + 노선명으로 도시 간 동명역까지 고유화)
 function stationMeta(station, l1) {
   const s = seed("st|" + l1 + "|" + station);
+  // 타이틀은 무조건 '역명 + 출장마사지'로 시작
   const titles = [
     `${station} 출장마사지·홈타이 안내 — ${l1} | ${site.name}`,
-    `${l1} ${station} 출장마사지·홈타이 이용 안내 | ${site.name}`,
-    `${station} 홈타이·출장마사지 방문 안내 (${l1}) | ${site.name}`,
+    `${station} 출장마사지 이용 안내 · ${l1} | ${site.name}`,
+    `${station} 출장마사지·홈타이 방문 예약 (${l1}) | ${site.name}`,
     `${station} 출장마사지 예약 가이드 — ${l1} | ${site.name}`,
   ];
   const descs = [
@@ -353,7 +354,7 @@ function linePage(line, sys) {
     path,
     file: `subway/line/${line.slug}/index.html`,
     html: layout({
-      title: `${line.name} 역별 출장마사지·홈타이 안내 | ${site.name}`,
+      title: `${line.name} 출장마사지·홈타이 역별 안내 | ${site.name}`,
       description: `${line.name} 역별 출장마사지·홈타이 방문 권역과 예약 확인 사항을 정리했습니다.`.slice(0, 80),
       path,
       body,

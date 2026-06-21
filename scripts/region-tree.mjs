@@ -21,10 +21,11 @@ const pick = (s, arr) => arr[s % arr.length];
 // 타이틀·디스크립션 변형 (중복 방지: 지역명 조합 + 시드 기반 문형 변형)
 export function dongMeta(dongName, metro, areaName) {
   const s = seed(metro + "|" + areaName + "|" + dongName);
+  // 타이틀은 무조건 '지역명 + 출장마사지'로 시작
   const titles = [
-    `${dongName} 출장마사지·홈타이 안내 (${metro} ${areaName}) | ${site.name}`,
-    `${metro} ${areaName} ${dongName} 출장마사지·홈타이 이용 안내 | ${site.name}`,
-    `${dongName} 홈타이·출장마사지 방문 안내 — ${areaName} | ${site.name}`,
+    `${dongName} 출장마사지·홈타이 안내 — ${metro} ${areaName} | ${site.name}`,
+    `${dongName} 출장마사지 이용 안내 · ${metro} ${areaName} | ${site.name}`,
+    `${dongName} 출장마사지·홈타이 방문 예약 — ${metro} ${areaName} | ${site.name}`,
     `${dongName} 출장마사지 예약 가이드 (${metro} ${areaName}) | ${site.name}`,
   ];
   const descs = [
@@ -41,11 +42,12 @@ export function dongMeta(dongName, metro, areaName) {
 }
 export function branchMeta(fullName, childLabel) {
   const s = seed("b|" + fullName);
+  // 타이틀은 무조건 '지역명 + 출장마사지'로 시작
   const titles = [
     `${fullName} 출장마사지·홈타이 이용 안내 | ${site.name}`,
-    `${fullName} 홈타이·출장마사지 — ${childLabel}별 방문 안내 | ${site.name}`,
-    `${fullName} 출장마사지 예약·프로그램 안내 | ${site.name}`,
-    `${fullName} 방문 마사지(홈타이) 이용 가이드 | ${site.name}`,
+    `${fullName} 출장마사지 — ${childLabel}별 방문 안내 | ${site.name}`,
+    `${fullName} 출장마사지·홈타이 예약·프로그램 안내 | ${site.name}`,
+    `${fullName} 출장마사지 방문 이용 가이드 | ${site.name}`,
   ];
   const descs = [
     `${fullName} 출장마사지·홈타이 안내와 ${childLabel}별 방문 권역, 예약 확인 사항 정리.`,
