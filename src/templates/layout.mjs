@@ -174,6 +174,7 @@ export function layout(o) {
     image: ogImage,
     areaServed: "KR",
     knowsLanguage: "ko",
+    priceRange: "₩90,000~₩180,000",
   };
 
   const breadcrumbLd = o.breadcrumb
@@ -232,6 +233,54 @@ export function layout(o) {
 </body>
 </html>`;
 }
+
+// 코스별 기본 요금표 (전 페이지 공용 컴포넌트)
+export const PRICING = [
+  { name: "60분 코스", price: "90,000", dur: "60분", desc: "기본 컨디션·릴랙스 케어" },
+  { name: "90분 코스", price: "150,000", dur: "90분", desc: "아로마 포함 추천 구성", featured: true },
+  { name: "120분 코스", price: "180,000", dur: "120분", desc: "전신 집중 프리미엄 케어" },
+];
+
+export function pricingTable() {
+  const cards = PRICING.map(
+    (c) => `
+      <div class="price-card${c.featured ? " featured" : ""}">
+        ${c.featured ? '<span class="badge">추천</span>' : ""}
+        <h3>${esc(c.name)}</h3>
+        <div class="price"><strong>${esc(c.price)}</strong><span>원</span></div>
+        <p class="dur">${esc(c.dur)}</p>
+        <p class="desc">${esc(c.desc)}</p>
+        <a class="btn ${c.featured ? "btn-gold" : "btn-outline"}" href="${site.phoneHref}">예약 문의</a>
+      </div>`
+  ).join("");
+  return `
+  <section class="pricing" aria-label="코스별 기본 요금">
+    <div class="container">
+      <div class="pricing-head">
+        <h2>코스별 기본 요금</h2>
+        <p>60·90·120분 코스별 기본 요금입니다. 숨겨진 추가 비용 없이 투명하게 안내합니다.</p>
+      </div>
+      <div class="pricing-grid">${cards}</div>
+      <p class="pricing-note">지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다. <a href="/guide/">상세 요금 안내 보기 →</a></p>
+    </div>
+  </section>`;
+}
+
+// 요금 구조화 데이터 (OfferCatalog)
+export const pricingLd = () => ({
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "출장마사지·홈타이",
+  provider: { "@type": "HealthAndBeautyBusiness", name: site.name, telephone: site.phone },
+  areaServed: "KR",
+  offers: PRICING.map((c) => ({
+    "@type": "Offer",
+    name: c.name,
+    price: c.price.replace(/,/g, ""),
+    priceCurrency: "KRW",
+    description: c.desc,
+  })),
+});
 
 // FAQPage JSON-LD 헬퍼
 export const faqLd = (faqs) => ({

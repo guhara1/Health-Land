@@ -356,6 +356,55 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 .breadcrumb a:hover { color: var(--color-accent); }
 .breadcrumb span { margin: 0 6px; }
 
+/* ---------- 코스별 기본 요금 ---------- */
+.pricing {
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(201,169,106,0.12), transparent 60%),
+    linear-gradient(160deg, var(--c-green-900), var(--c-green-800));
+  color: var(--c-cream-50);
+  padding: var(--sp-10) 0;
+}
+.pricing-head { text-align: center; max-width: 60ch; margin: 0 auto var(--sp-6); }
+.pricing-head h2 { color: var(--c-cream-50); margin: 0 0 var(--sp-2); }
+.pricing-head p { color: var(--c-green-100); margin: 0; font-size: var(--fs-sm); }
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-5); max-width: 940px; margin: 0 auto; align-items: stretch;
+}
+.price-card {
+  position: relative; display: flex; flex-direction: column; text-align: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r-lg); padding: var(--sp-6) var(--sp-5);
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+.price-card:hover { transform: translateY(-4px); border-color: rgba(201,169,106,0.5); }
+.price-card.featured {
+  border-color: var(--c-gold-500);
+  box-shadow: 0 0 0 1px var(--c-gold-500), var(--shadow-lg);
+  background: rgba(201,169,106,0.07);
+}
+.price-card h3 { color: var(--c-cream-50); font-size: var(--fs-md); margin: 0 0 var(--sp-4); }
+.price-card .price { display: flex; align-items: baseline; justify-content: center; gap: 4px; }
+.price-card .price strong { font-size: 2.4rem; font-weight: 800; color: var(--c-cream-50); letter-spacing: -0.03em; }
+.price-card .price span { color: var(--c-green-100); font-size: var(--fs-sm); }
+.price-card .dur { color: var(--c-gold-300); font-weight: 700; margin: var(--sp-2) 0; font-size: var(--fs-sm); }
+.price-card .desc { color: var(--c-green-100); font-size: var(--fs-sm); min-height: 2.8em; margin: 0 0 var(--sp-4); }
+.price-card .btn { width: 100%; margin-top: auto; }
+.price-card .btn-outline { border-color: rgba(255,255,255,0.42); color: var(--c-cream-50); }
+.price-card .btn-outline:hover { background: var(--c-cream-50); color: var(--c-green-900); border-color: var(--c-cream-50); }
+.price-card .badge {
+  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--c-gold-600), var(--c-gold-500));
+  color: var(--c-green-900); font-weight: 800; font-size: var(--fs-xs);
+  padding: 5px 16px; border-radius: var(--r-pill); white-space: nowrap;
+}
+.pricing-note { text-align: center; margin: var(--sp-6) 0 0; color: var(--c-green-100); font-size: var(--fs-sm); }
+.pricing-note a { color: var(--c-gold-300); font-weight: 700; }
+@media (max-width: 760px) {
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+}
+
 /* ---------- 8. 푸터 ---------- */
 .site-footer { background: var(--c-green-900); color: var(--c-green-100); margin-top: var(--sp-10); }
 .site-footer a { color: var(--c-green-100); }

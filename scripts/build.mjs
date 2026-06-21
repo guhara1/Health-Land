@@ -7,7 +7,7 @@ import { site, primaryNav, programMenu } from "../data/site.mjs";
 import { programs, programBySlug } from "../data/programs.mjs";
 import { extra as programExtra, regionNote } from "../data/programs-extra.mjs";
 import { regions, subways, placeBySlug, regionGroups } from "../data/regions.mjs";
-import { layout, esc, faqLd, articleLd } from "../src/templates/layout.mjs";
+import { layout, esc, faqLd, articleLd, pricingTable, pricingLd } from "../src/templates/layout.mjs";
 import { buildSeoulPages } from "./locations.mjs";
 
 // 계층(자치구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
@@ -58,20 +58,23 @@ function authorBox() {
   </aside>`;
 }
 
-// 프로그램 -> 지역 내부링크 (롱테일)
-function regionLinks() {
+// 지역/안내 내부링크 (강화된 롱테일 키워드)
+// ctx: 프로그램/페이지 키워드(예: "스웨디시", "홈타이") — 지정 시 지역+프로그램 롱테일 생성
+function regionLinks(ctx) {
+  const k = ctx ? `${ctx} ` : "";
   const links = [
-    ["/region/seoul/", "서울 출장마사지"],
-    ["/region/seoul/gangnam/", "강남 출장마사지"],
-    ["/region/busan/", "부산 출장마사지"],
-    ["/region/suwon/", "수원 출장마사지"],
-    ["/subway/seoul-line2/", "서울 2호선 출장마사지"],
-    ["/subway/gangnam-station/", "강남역 출장마사지"],
-    ["/guide/", "예약 전 체크리스트"],
-    ["/about/", "처음 이용 안내"],
+    ["/region/seoul/", `서울 ${k}출장마사지 예약`],
+    ["/region/seoul/gangnam/", `강남 ${k}출장마사지·홈타이`],
+    ["/region/gyeonggi/", `경기 ${k}출장마사지 방문 가능 지역`],
+    ["/region/busan/", `부산 ${k}출장마사지 안내`],
+    ["/region/suwon/", `수원 ${k}출장마사지 예약`],
+    ["/subway/seoul-line2/", `서울 2호선 ${k}출장마사지`],
+    ["/subway/gangnam-station/", `강남역 ${k}홈타이 출장마사지`],
+    ["/guide/", `${k}출장마사지 예약 전 체크리스트`],
+    ["/about/", `${k}출장마사지 처음 이용 안내`],
   ];
   return `<div class="link-cloud">${links
-    .map(([u, t]) => `<a href="${u}">${esc(t)}</a>`)
+    .map(([u, t]) => `<a href="${u}">${esc(t.replace(/\s+/g, " ").trim())}</a>`)
     .join("")}</div>`;
 }
 
@@ -154,7 +157,7 @@ function programPage(p) {
           ? `<p>${esc(regionNote[p.slug])}</p>`
           : "<p>원하는 지역과 이용 방식에 따라 아래 페이지를 함께 확인하면 선택 기준을 잡기 쉽습니다.</p>"
       }
-      ${regionLinks()}
+      ${regionLinks(p.label)}
 
       <h2 id="faq">자주 묻는 질문</h2>
       <div class="faq">
@@ -315,8 +318,24 @@ function placePage(r, baseUrl) {
     <div class="grid grid-3" style="margin:var(--sp-4) 0">
       ${progCards}
     </div>
+    <div class="link-cloud">${["swedish", "aroma-therapy", "thai-massage", "home-care", "foot-massage"]
+      .map((slug) => {
+        const pp = programBySlug[slug];
+        return `<a href="/program/${slug}/">${esc(r.name + " " + pp.label + " 출장마사지")}</a>`;
+      })
+      .join("")}</div>
 
     <p>${esc(r.closing)}</p>
+
+    ${
+      r.cities && r.cities.length
+        ? `<h2>${esc(r.name)} 주요 도시</h2>
+    <p>${esc(r.name)}에 속한 주요 도시별로 출장마사지·홈타이 이용 안내를 확인할 수 있습니다.</p>
+    <div class="link-cloud">${r.cities
+            .map((c) => `<a href="${c.url}">${esc(c.name)} 출장마사지</a>`)
+            .join("")}</div>`
+        : ""
+    }
 
     ${
       nearby
@@ -343,7 +362,8 @@ function placePage(r, baseUrl) {
     <p><a class="btn btn-primary" href="${site.phoneHref}">📞 ${esc(
     r.name
   )} 출장마사지 전화예약 ${esc(site.phone)}</a></p>
-  </div></article>`;
+  </div></article>
+  ${pricingTable()}`;
 
   const path = `${baseUrl}${r.slug}/`;
   return layout({
@@ -354,6 +374,7 @@ function placePage(r, baseUrl) {
     structuredData: [
       faqLd(faqs),
       articleLd({ headline: r.h1, description: r.desc, path, modified: MODIFIED }),
+      pricingLd(),
     ],
     breadcrumb: [
       { name: "홈", url: "/" },
@@ -511,6 +532,8 @@ function homePage() {
     <p style="margin-top:var(--sp-5)"><a class="btn btn-outline" href="/program/">전체 마사지 프로그램 보기</a></p>
   </div></section>
 
+  ${pricingTable()}
+
   <section class="section section-alt"><div class="container">
     <div class="section-head"><span class="eyebrow">지역·지하철역별 찾기</span>
       <h2>가까운 지역으로 빠르게 확인</h2>
@@ -552,6 +575,7 @@ function homePage() {
       "스웨디시·타이·아로마 등 출장마사지와 홈타이 정보를 예약 전 확인 기준 중심으로 안내합니다.",
     path: "/",
     body,
+    structuredData: [pricingLd()],
   });
 }
 

@@ -45,7 +45,8 @@ export const regions = [
       "원하는 관리 방식에 따라 스웨디시·아로마테라피·타이마사지 중에서 선택 기준이 달라지며, 집·숙소로 받는 홈타이 형태를 함께 비교하는 분도 많습니다.",
     ],
     programs: DEFAULT_PROGRAMS,
-    nearby: ["seoul", "incheon", "suwon"],
+    nearby: ["seoul", "incheon"],
+    cities: [{ name: "수원", url: "/region/suwon/" }],
     closing:
       "방문 형태가 필요하면 홈타이 항목을, 늦은 시간 이용이 필요하면 24시간 조건을 함께 확인하세요.",
   },
@@ -299,7 +300,7 @@ export const regions = [
 
 // 메가메뉴 / 지역 인덱스 그룹 구성
 export const regionGroups = [
-  { group: "수도권", slugs: ["seoul", "gyeonggi", "suwon", "incheon"] },
+  { group: "수도권", slugs: ["seoul", "gyeonggi", "incheon"] },
   { group: "강원·충청", slugs: ["gangwon", "daejeon", "sejong", "chungbuk", "chungnam"] },
   { group: "호남", slugs: ["gwangju", "jeonbuk", "jeonnam"] },
   { group: "영남·제주", slugs: ["busan", "daegu", "ulsan", "gyeongbuk", "gyeongnam", "jeju"] },

@@ -1,7 +1,7 @@
 // 서울 계층(광역 → 자치구 → 행정동) 페이지 생성기
 // - 각 페이지 2000~2500자 목표
 // - 구별 실제 정보(역·랜드마크·특징) + 동별 인접 동 목록을 주입해 고유성 확보
-import { layout, esc, faqLd, articleLd } from "../src/templates/layout.mjs";
+import { layout, esc, faqLd, articleLd, pricingTable, pricingLd } from "../src/templates/layout.mjs";
 import { site } from "../data/site.mjs";
 import { programBySlug } from "../data/programs.mjs";
 import { seoul } from "../data/seoul.mjs";
@@ -30,10 +30,12 @@ function authorBox() {
   </aside>`;
 }
 
-function programChips() {
+// 롱테일 프로그램 링크 (place 지정 시 '지역 프로그램 출장마사지' 형태)
+function programChips(place) {
+  const pre = place ? `${place} ` : "";
   return `<div class="link-cloud">${PROGRAM_PICKS.map((slug) => {
     const p = programBySlug[slug];
-    return `<a href="/program/${slug}/">${esc(p.label)}</a>`;
+    return `<a href="/program/${slug}/">${esc(pre + p.label + " 출장마사지")}</a>`;
   }).join("")}</div>`;
 }
 
@@ -131,7 +133,7 @@ function dongPage(gu, dongName, siblings) {
 
     <h2>${esc(dongName)}에서 비교해 볼 관리 방식</h2>
     <p>부드러운 오일 관리를 원한다면 스웨디시나 아로마테라피, 스트레칭 위주의 시원한 관리를 원한다면 타이마사지를 비교해 보세요. 집·숙소로 편하게 받고 싶다면 홈타이, 다리만 가볍게 풀고 싶다면 발마사지처럼 부분 관리도 선택할 수 있습니다.</p>
-    ${programChips()}
+    ${programChips(dongName)}
 
     <h2>${esc(dongName)} 출장마사지·홈타이 이용 흐름</h2>
     <p>예약 시 ${esc(
@@ -149,11 +151,13 @@ function dongPage(gu, dongName, siblings) {
       ${near
         .map(
           (d) =>
-            `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(d)}</a>`
+            `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(
+              d + " 출장마사지"
+            )}</a>`
         )
         .join("")}
-      <a href="/region/seoul/${guSlug}/">${esc(gu.name)} 전체</a>
-      <a href="/region/seoul/">서울 전체</a>
+      <a href="/region/seoul/${guSlug}/">${esc(gu.name)} 출장마사지 전체</a>
+      <a href="/region/seoul/">서울 출장마사지·홈타이 전체</a>
     </div>
 
     <h2>자주 묻는 질문</h2>
@@ -167,7 +171,8 @@ function dongPage(gu, dongName, siblings) {
 
     ${authorBox()}
     ${ctaBtn(dongName + " 출장마사지")}
-  </div></article>`;
+  </div></article>
+  ${pricingTable()}`;
 
   const html = layout({
     title: `${dongName} 출장마사지·홈타이 이용 안내 (서울 ${gu.name}) | ${site.name}`,
@@ -185,6 +190,7 @@ function dongPage(gu, dongName, siblings) {
         path,
         modified: MODIFIED,
       }),
+      pricingLd(),
     ],
     breadcrumb: [
       { name: "홈", url: "/" },
@@ -207,7 +213,9 @@ function guPage(gu) {
   const dongLinks = gu.dongs
     .map(
       (d) =>
-        `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(d)}</a>`
+        `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(
+          d + " 출장마사지"
+        )}</a>`
     )
     .join("");
 
@@ -274,7 +282,7 @@ function guPage(gu) {
 
     <h2>${esc(gu.name)}에서 비교해 볼 관리 방식</h2>
     <p>부드러운 오일 관리를 원한다면 스웨디시·아로마테라피, 스트레칭 위주라면 타이마사지, 집·숙소에서 편하게 받고 싶다면 홈타이, 가벼운 부분 관리는 발마사지를 비교해 보세요.</p>
-    ${programChips()}
+    ${programChips(gu.name)}
     ${callout()}
 
     <h2>${esc(gu.name)} 출장마사지 예약 안내</h2>
@@ -304,7 +312,8 @@ function guPage(gu) {
 
     ${authorBox()}
     ${ctaBtn("서울 " + gu.name + " 출장마사지")}
-  </div></article>`;
+  </div></article>
+  ${pricingTable()}`;
 
   const html = layout({
     title: `서울 ${gu.name} 출장마사지·홈타이 이용 안내 | ${site.name}`,
@@ -322,6 +331,7 @@ function guPage(gu) {
         path,
         modified: MODIFIED,
       }),
+      pricingLd(),
     ],
     breadcrumb: [
       { name: "홈", url: "/" },
@@ -378,7 +388,8 @@ function seoulOverviewPage() {
       )}.</p></details>
     </div>
     ${authorBox()}
-  </div></section>`;
+  </div></section>
+  ${pricingTable()}`;
 
   return {
     path: "/region/seoul/",
@@ -388,6 +399,7 @@ function seoulOverviewPage() {
       description: "서울 25개 자치구와 행정동별 출장마사지·홈타이 이용 안내를 확인하세요.",
       path: "/region/seoul/",
       body,
+      structuredData: [pricingLd()],
       breadcrumb: [
         { name: "홈", url: "/" },
         { name: "지역별 찾기", url: "/region/" },
