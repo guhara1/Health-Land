@@ -87,24 +87,7 @@ function renderHeader(currentPath) {
 }
 
 function renderFooter() {
-  const progCols = programMenu.slice(0, 2);
-  const footProg = progCols
-    .map(
-      (g) => `
-        <div>
-          <h4>${esc(g.group)}</h4>
-          <ul>
-            ${g.items
-              .slice(0, 6)
-              .map(
-                (i) => `<li><a href="/program/${i.slug}/">${esc(i.label)}</a></li>`
-              )
-              .join("\n            ")}
-          </ul>
-        </div>`
-    )
-    .join("");
-
+  const year = new Date().getFullYear();
   return `
   <footer class="site-footer">
     <div class="container">
@@ -112,27 +95,53 @@ function renderFooter() {
         <div class="footer-brand">
           <h4>${esc(site.name)}</h4>
           <p>${esc(site.tagline)}</p>
-          <p class="phone"><a href="${site.phoneHref}">${esc(site.phone)}</a></p>
-          <p>전화예약으로 지역·프로그램·이용 조건을 안내받을 수 있습니다.</p>
+          <address class="footer-nap">
+            <a class="phone" href="${site.phoneHref}">${esc(site.phone)}</a>
+            <span class="nap-line">전화예약 · 연중무휴 상담 안내</span>
+            <a class="nap-mail" href="mailto:${esc(site.email)}">${esc(site.email)}</a>
+          </address>
+          <div class="footer-cta">
+            <span class="footer-cta-label">비즈니스 문의</span>
+            <div class="footer-cta-btns">
+              <a class="tg-btn" href="https://t.me/googleseolab" target="_blank" rel="noopener noreferrer nofollow">
+                <span class="tg-ico" aria-hidden="true">✈</span> 웹사이트 제작문의
+              </a>
+              <a class="tg-btn" href="https://t.me/googleseolab" target="_blank" rel="noopener noreferrer nofollow">
+                <span class="tg-ico" aria-hidden="true">✈</span> 제휴문의
+              </a>
+            </div>
+          </div>
         </div>
-        ${footProg}
-        <div>
-          <h4>안내</h4>
+        <nav class="footer-col" aria-label="출장마사지 찾기">
+          <h4>출장마사지 찾기</h4>
           <ul>
-            <li><a href="/guide/">예약 가이드</a></li>
-            <li><a href="/about/">이용 안내</a></li>
+            <li><a href="/outcall/">출장마사지</a></li>
             <li><a href="/region/">지역별 찾기</a></li>
             <li><a href="/subway/">지하철역별 찾기</a></li>
             <li><a href="/program/">마사지 프로그램</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-col" aria-label="이용 안내">
+          <h4>이용 안내</h4>
+          <ul>
+            <li><a href="/guide/">예약 가이드</a></li>
+            <li><a href="/about/">이용 안내</a></li>
             <li><a href="/contact/">문의하기</a></li>
           </ul>
-        </div>
+        </nav>
+        <nav class="footer-col" aria-label="정책 및 약관">
+          <h4>정책·약관</h4>
+          <ul>
+            <li><a href="/privacy/">개인정보처리방침</a></li>
+            <li><a href="/terms/">이용약관</a></li>
+            <li><a href="/about/">편집·운영 정책</a></li>
+            <li><a href="/sitemap.xml">사이트맵</a></li>
+          </ul>
+        </nav>
       </div>
       <div class="footer-bottom">
-        <p>© ${new Date().getFullYear()} ${esc(site.name)}. 전화예약 ${esc(
-    site.phone
-  )}</p>
-        <p class="disclaimer">본 사이트는 출장마사지·홈타이 업체 정보를 안내하는 플랫폼이며, 모든 가격·운영 정보는 변동될 수 있으므로 예약 전 업체에 직접 확인하시기 바랍니다. 건전한 관리 서비스만을 안내합니다.</p>
+        <p>© ${year} ${esc(site.name)}. All rights reserved. · 전화예약 ${esc(site.phone)}</p>
+        <p class="disclaimer">본 사이트는 출장마사지·홈타이 업체 정보를 안내하는 정보 플랫폼이며, 통신판매의 당사자가 아닙니다. 모든 가격·운영 정보는 변동될 수 있으므로 예약 전 업체에 직접 확인하시기 바랍니다. 건전한 관리 서비스 정보만을 안내합니다.</p>
       </div>
     </div>
   </footer>

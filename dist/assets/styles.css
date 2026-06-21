@@ -399,9 +399,27 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 .footer-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
 .footer-grid li a { font-size: var(--fs-sm); }
 .footer-brand h4 { font-family: var(--font-serif); font-size: var(--fs-md); color: var(--color-text); }
-.footer-brand .phone { font-size: var(--fs-lg); font-weight: 800; color: var(--c-gold-300); margin: var(--sp-2) 0; }
+.footer-nap { font-style: normal; display: grid; gap: 2px; margin: var(--sp-3) 0; }
+.footer-nap .phone { font-size: var(--fs-lg); font-weight: 800; color: var(--c-gold-300); }
+.footer-nap .nap-line { font-size: var(--fs-xs); color: var(--color-muted); }
+.footer-nap .nap-mail { font-size: var(--fs-sm); }
+
+/* 비즈니스 문의 (텔레그램) */
+.footer-cta { margin-top: var(--sp-4); }
+.footer-cta-label { display: block; font-size: var(--fs-xs); letter-spacing: .1em; text-transform: uppercase; color: var(--c-gold-400); font-weight: 700; margin-bottom: var(--sp-2); }
+.footer-cta-btns { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.tg-btn {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4); border-radius: var(--r-pill);
+  border: 1px solid var(--color-border); background: var(--color-surface);
+  color: var(--color-text) !important; font-size: var(--fs-sm); font-weight: 700;
+  transition: border-color .18s var(--ease), background .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+.tg-btn:hover { border-color: var(--c-gold-500); color: var(--c-gold-300) !important; background: var(--color-accent-soft); transform: translateY(-2px); box-shadow: var(--glow-gold); }
+.tg-btn .tg-ico { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; border-radius: 50%; background: linear-gradient(135deg, #2aabee, #229ed9); color: #fff; font-size: 11px; transform: translateX(-1px); }
+
 .footer-bottom { border-top: 1px solid var(--color-border-soft); padding: var(--sp-4) 0; font-size: var(--fs-xs); color: var(--color-muted); }
-.footer-bottom .disclaimer { margin-top: var(--sp-2); }
+.footer-bottom .disclaimer { margin-top: var(--sp-2); line-height: 1.6; }
 
 /* 모바일 하단 고정 바 */
 .mobile-callbar { display: none; }
