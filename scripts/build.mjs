@@ -1085,6 +1085,54 @@ function sitemap(urls) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
 }
 
+// IndexNow 키 (빙·네이버·얀덱스 즉시 색인 통보). 키 파일은 도메인 루트에 동일 내용으로 게시됨.
+const INDEXNOW_KEY = "b00508e375ed8ff4e993dc41ca0b8c4a";
+
+// 경로별 메타(타이틀·디스크립션) — RSS 생성에 사용
+const pageMetaByPath = {};
+
+// RSS 2.0 피드 — 핵심 페이지(안내·프로그램·시·도 허브)를 노출해 검색엔진 발견을 돕는다.
+function rssFeed(urls) {
+  const xmlEsc = (s = "") =>
+    String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const pubDate = new Date(MODIFIED + "T09:00:00+09:00").toUTCString();
+  // 정적 안내 + 프로그램 + 17개 시·도 허브만 피드에 포함(과도한 항목 방지)
+  const feedPaths = [
+    "/", "/outcall/", "/program/", "/region/", "/subway/", "/guide/", "/about/", "/contact/",
+    ...programs.map((p) => programUrl(p.slug)),
+    ...regions.map((r) => `/region/${r.slug}/`),
+  ].filter((p, i, a) => urls.includes(p) && a.indexOf(p) === i);
+
+  const items = feedPaths
+    .map((p) => {
+      const meta = pageMetaByPath[p] || {};
+      const title = meta.title || site.name;
+      const desc = meta.desc || site.tagline;
+      const link = site.baseUrl + p;
+      return `  <item>
+    <title>${xmlEsc(title)}</title>
+    <link>${link}</link>
+    <guid isPermaLink="true">${link}</guid>
+    <description>${xmlEsc(desc)}</description>
+    <pubDate>${pubDate}</pubDate>
+  </item>`;
+    })
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>${xmlEsc(site.name)} — ${xmlEsc(site.tagline)}</title>
+  <link>${site.baseUrl}/</link>
+  <atom:link href="${site.baseUrl}/rss.xml" rel="self" type="application/rss+xml" />
+  <description>${xmlEsc(site.tagline)}</description>
+  <language>ko</language>
+  <lastBuildDate>${pubDate}</lastBuildDate>
+${items}
+</channel>
+</rss>`;
+}
+
 // ---------- 메인 ----------
 async function build() {
   if (existsSync(DIST)) await rm(DIST, { recursive: true, force: true });
@@ -1100,6 +1148,7 @@ async function build() {
     const d = (html.match(/<meta name="description" content="([^"]*)"/) || [])[1] || "";
     metaTitles.set(t, (metaTitles.get(t) || 0) + 1);
     metaDescs.set(d, (metaDescs.get(d) || 0) + 1);
+    pageMetaByPath[path] = { title: t, desc: d };
   };
 
   console.log("→ 페이지 생성 중...");
@@ -1197,10 +1246,31 @@ async function build() {
   // robots.txt + sitemap.xml
   await writeFile(
     join(DIST, "robots.txt"),
-    `User-agent: *\nAllow: /\nSitemap: ${site.baseUrl}/sitemap.xml\n`,
+    `# robots.txt — ${site.name}
+User-agent: *
+Allow: /
+
+# 주요 검색엔진 명시 허용 (구글/빙/네이버/다음)
+User-agent: Googlebot
+Allow: /
+User-agent: bingbot
+Allow: /
+User-agent: Yeti
+Allow: /
+User-agent: Daumoa
+Allow: /
+
+Sitemap: ${site.baseUrl}/sitemap.xml
+`,
     "utf8"
   );
   await writeFile(join(DIST, "sitemap.xml"), sitemap(urls), "utf8");
+
+  // RSS 2.0 피드 (네이버·구글·피드리더 색인/발견용)
+  await writeFile(join(DIST, "rss.xml"), rssFeed(urls), "utf8");
+
+  // IndexNow 키 파일 (빙·네이버·얀덱스 즉시 색인 통보용)
+  await writeFile(join(DIST, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY, "utf8");
 
   // llms.txt (AI 에이전트용 — H1 헤더 + 링크 포함 마크다운)
   const u = site.baseUrl;
