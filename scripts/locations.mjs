@@ -35,7 +35,7 @@ function programChips(place) {
   const pre = place ? `${place} ` : "";
   return `<div class="link-cloud">${PROGRAM_PICKS.map((slug) => {
     const p = programBySlug[slug];
-    return `<a href="/program/${slug}/">${esc(pre + p.label + " 출장마사지")}</a>`;
+    return `<a href="/program/${slug}/">${esc(pre + p.label)}</a>`;
   }).join("")}</div>`;
 }
 
@@ -151,13 +151,11 @@ function dongPage(gu, dongName, siblings) {
       ${near
         .map(
           (d) =>
-            `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(
-              d + " 출장마사지"
-            )}</a>`
+            `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(d)}</a>`
         )
         .join("")}
-      <a href="/region/seoul/${guSlug}/">${esc(gu.name)} 출장마사지 전체</a>
-      <a href="/region/seoul/">서울 출장마사지·홈타이 전체</a>
+      <a href="/region/seoul/${guSlug}/">${esc(gu.name)} 전체</a>
+      <a href="/region/seoul/">서울 전체</a>
     </div>
 
     <h2>자주 묻는 질문</h2>
@@ -213,9 +211,7 @@ function guPage(gu) {
   const dongLinks = gu.dongs
     .map(
       (d) =>
-        `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(
-          d + " 출장마사지"
-        )}</a>`
+        `<a href="/region/seoul/${guSlug}/${gu.dongSlug[d]}/">${esc(d)}</a>`
     )
     .join("");
 

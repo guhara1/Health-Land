@@ -39,7 +39,7 @@ function programChips(place) {
   const pre = place ? `${place} ` : "";
   return `<div class="link-cloud">${PROGRAM_PICKS.map((slug) => {
     const p = programBySlug[slug];
-    return `<a href="/program/${slug}/">${esc(pre + p.label + " 출장마사지")}</a>`;
+    return `<a href="/program/${slug}/">${esc(pre + p.label)}</a>`;
   }).join("")}</div>`;
 }
 const stationsText = (n) => (n.stations && n.stations.length ? n.stations.slice(0, 4).join("·") : "");
@@ -177,9 +177,9 @@ function dongPage(node) {
     <h2>${esc(dongName)} 인근 지역</h2>
     <p>같은 ${esc(areaName)} 내 ${esc(nearText)} 등 인접 동과 함께 비교하면 방문 권역을 잡기 쉽습니다.</p>
     <div class="link-cloud">
-      ${near.map((d) => `<a href="${d.url}">${esc(d.name + " 출장마사지")}</a>`).join("")}
-      <a href="${parent.url}">${esc(areaName)} 출장마사지 전체</a>
-      <a href="${node.ancestors[0].url}">${esc(metro)} 출장마사지·홈타이 전체</a>
+      ${near.map((d) => `<a href="${d.url}">${esc(d.name)}</a>`).join("")}
+      <a href="${parent.url}">${esc(areaName)} 전체</a>
+      <a href="${node.ancestors[0].url}">${esc(metro)} 전체</a>
     </div>
 
     <h2>자주 묻는 질문</h2>
@@ -230,7 +230,7 @@ function branchPage(node) {
   const fullName = node.kind === "metro" ? node.name : `${metro} ${node.name}`;
 
   const childLinks = (node.children || [])
-    .map((c) => `<a href="${c.url}">${esc(c.name + " 출장마사지")}</a>`)
+    .map((c) => `<a href="${c.url}">${esc(c.name)}</a>`)
     .join("");
   const childCards = (node.children || [])
     .map(

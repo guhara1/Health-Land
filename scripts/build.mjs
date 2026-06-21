@@ -117,15 +117,15 @@ function authorBox() {
 function regionLinks(ctx) {
   const k = ctx ? `${ctx} ` : "";
   const links = [
-    ["/region/seoul/", `서울 ${k}출장마사지 예약`],
-    ["/region/seoul/gangnam/", `강남 ${k}출장마사지·홈타이`],
-    ["/region/gyeonggi/", `경기 ${k}출장마사지 방문 가능 지역`],
-    ["/region/busan/", `부산 ${k}출장마사지 안내`],
-    ["/region/gyeonggi/suwon/", `수원 ${k}출장마사지 예약`],
-    ["/subway/seoul-line2/", `서울 2호선 ${k}출장마사지`],
-    ["/subway/gangnam-station/", `강남역 ${k}홈타이 출장마사지`],
-    ["/guide/", `${k}출장마사지 예약 전 체크리스트`],
-    ["/about/", `${k}출장마사지 처음 이용 안내`],
+    ["/region/seoul/", `서울 ${k}예약 안내`],
+    ["/region/seoul/gangnam/", `강남 ${k}홈타이 안내`],
+    ["/region/gyeonggi/", `경기 ${k}방문 가능 지역`],
+    ["/region/busan/", `부산 ${k}이용 안내`],
+    ["/region/gyeonggi/suwon/", `수원 ${k}예약 안내`],
+    ["/subway/seoul-line2/", `서울 2호선 ${k}이용 안내`],
+    ["/subway/gangnam-station/", `강남역 ${k}홈타이`],
+    ["/guide/", `${k}예약 전 체크리스트`],
+    ["/about/", `${k}처음 이용 안내`],
   ];
   return `<div class="link-cloud">${links
     .map(([u, t]) => `<a href="${u}">${esc(t.replace(/\s+/g, " ").trim())}</a>`)
@@ -339,7 +339,7 @@ function placePage(r, baseUrl) {
     .map((s) => {
       const n = placeBySlug[s];
       const base = n.type === "subway" ? "/subway/" : "/region/";
-      return `<a href="${base}${n.slug}/">${esc(n.name)} 출장마사지</a>`;
+      return `<a href="${base}${n.slug}/">${esc(n.name)}</a>`;
     })
     .join("");
 
@@ -375,7 +375,7 @@ function placePage(r, baseUrl) {
     <div class="link-cloud">${["swedish", "aroma-therapy", "thai-massage", "home-care", "foot-massage"]
       .map((slug) => {
         const pp = programBySlug[slug];
-        return `<a href="/program/${slug}/">${esc(r.name + " " + pp.label + " 출장마사지")}</a>`;
+        return `<a href="/program/${slug}/">${esc(r.name + " " + pp.label)}</a>`;
       })
       .join("")}</div>
 
@@ -386,7 +386,7 @@ function placePage(r, baseUrl) {
         ? `<h2>${esc(r.name)} 주요 도시</h2>
     <p>${esc(r.name)}에 속한 주요 도시별로 출장마사지·홈타이 이용 안내를 확인할 수 있습니다.</p>
     <div class="link-cloud">${r.cities
-            .map((c) => `<a href="${c.url}">${esc(c.name)} 출장마사지</a>`)
+            .map((c) => `<a href="${c.url}">${esc(c.name)}</a>`)
             .join("")}</div>`
         : ""
     }
@@ -445,7 +445,7 @@ function placeIndex(list, baseUrl, title, eyebrow, lead) {
   const cards = list
     .map(
       (r) => `<a class="card" href="${baseUrl}${r.slug}/">
-        <h3>${esc(r.name)} 출장마사지</h3>
+        <h3>${esc(r.name)}</h3>
         <p>${esc((r.intro[0] || "").slice(0, 64))}…</p>
       </a>`
     )
@@ -488,7 +488,7 @@ function regionIndex() {
           const r = placeBySlug[slug];
           if (!r) return "";
           return `<a class="card" href="/region/${slug}/">
-            <h3>${esc(r.name)} 출장마사지</h3>
+            <h3>${esc(r.name)}</h3>
             <p>${esc((r.intro[0] || "").slice(0, 58))}…</p>
           </a>`;
         })
@@ -556,8 +556,8 @@ function homePage() {
     .join("\n        ");
 
   const regionChips = [
-    ...regions.map((r) => [`/region/${r.slug}/`, `${r.name} 출장마사지`]),
-    ...subways.map((s) => [`/subway/${s.slug}/`, `${s.name} 출장마사지`]),
+    ...regions.map((r) => [`/region/${r.slug}/`, `${r.name}`]),
+    ...subways.map((s) => [`/subway/${s.slug}/`, `${s.name}`]),
   ]
     .map(([u, t]) => `<a class="chip" href="${u}">${esc(t)}</a>`)
     .join("");
@@ -591,7 +591,7 @@ function homePage() {
   <section class="section section-alt"><div class="container">
     <div class="section-head"><span class="eyebrow">지역·지하철역별 찾기</span>
       <h2>가까운 지역으로 빠르게 확인</h2>
-      <p>서울 출장마사지, 강남 출장마사지, 부산 출장마사지 등 지역과 지하철역 기준으로 안내를 확인할 수 있습니다.</p>
+      <p>서울·강남·경기·부산 등 전국 지역과 지하철역 기준으로 안내를 확인할 수 있습니다.</p>
     </div>
     <div class="chip-row">${regionChips}</div>
   </div></section>
