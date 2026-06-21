@@ -122,20 +122,24 @@ function authorBox() {
   </aside>`;
 }
 
-// 지역/안내 내부링크 (강화된 롱테일 키워드)
+// 지역/안내 내부링크 (롱테일 키워드 — 대상 페이지를 정확히 설명하는 자연스러운 앵커)
 // ctx: 프로그램/페이지 키워드(예: "스웨디시", "홈타이") — 지정 시 지역+프로그램 롱테일 생성
+// 동일 문구 반복(완전 일치 스터핑)을 피하기 위해 의도 표현(예약 안내/방문 안내/이용 안내 등)을 다양화한다.
 function regionLinks(ctx) {
   const k = ctx ? `${ctx} ` : "";
   const links = [
-    ["/region/seoul/", `서울 ${k}예약 안내`],
-    ["/region/seoul/gangnam/", `강남 ${k}홈타이 안내`],
-    ["/region/gyeonggi/", `경기 ${k}방문 가능 지역`],
-    ["/region/busan/", `부산 ${k}이용 안내`],
-    ["/region/gyeonggi/suwon/", `수원 ${k}예약 안내`],
-    ["/subway/line/line2/", `서울 2호선 ${k}이용 안내`],
-    ["/subway/gangnam/", `강남역 ${k}홈타이`],
-    ["/guide/", `${k}예약 전 체크리스트`],
-    ["/about/", `${k}처음 이용 안내`],
+    ["/region/seoul/", `서울 ${k}출장마사지 예약 안내`],
+    ["/region/seoul/gangnam/", `강남 ${k}홈타이·출장마사지 방문 안내`],
+    ["/region/gyeonggi/", `경기 ${k}출장마사지 방문 가능 지역`],
+    ["/region/gyeonggi/suwon/", `수원 ${k}출장마사지 예약 안내`],
+    ["/region/incheon/", `인천 ${k}출장마사지 이용 안내`],
+    ["/region/busan/", `부산 ${k}출장마사지·홈타이 안내`],
+    ["/region/daegu/", `대구 ${k}출장마사지 이용 안내`],
+    ["/region/daejeon/", `대전 ${k}출장마사지 예약 안내`],
+    ["/region/gwangju/", `광주 ${k}출장마사지 방문 안내`],
+    ["/subway/line/line2/", `서울 지하철 2호선 ${k}역별 출장마사지`],
+    ["/subway/gangnam/", `강남역 ${k}출장마사지·홈타이 이용`],
+    ["/guide/", `${k}출장마사지 예약 전 체크리스트`],
   ];
   return `<div class="link-cloud">${links
     .map(([u, t]) => `<a href="${u}">${esc(t.replace(/\s+/g, " ").trim())}</a>`)
