@@ -271,16 +271,59 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 .prose p { margin: var(--sp-4) 0; color: var(--color-text-soft); }
 .prose ul, .prose ol { margin: var(--sp-4) 0; padding-left: 1.3em; color: var(--color-text-soft); }
 .prose li { margin: var(--sp-2) 0; }
-.prose h2 { padding-top: var(--sp-2); }
 .prose strong { color: var(--color-text); }
+/* 앵커 이동 시 고정 헤더에 가리지 않도록 여백 확보 */
+.prose h2, .prose h3, [id] { scroll-margin-top: calc(var(--header-h) + 18px); }
+/* 본문 H2: 좌측 골드 액센트 바로 리듬감 부여 */
+.prose h2 {
+  position: relative; padding-top: var(--sp-2); padding-left: var(--sp-4);
+  letter-spacing: -.02em;
+}
+.prose h2::before {
+  content: ""; position: absolute; left: 0; top: calc(var(--sp-2) + .12em); bottom: .12em;
+  width: 3px; border-radius: 3px;
+  background: linear-gradient(180deg, var(--c-gold-400), var(--c-gold-700));
+}
 
 .callout { border-left: 3px solid var(--c-gold-500); background: var(--color-accent-soft); border-radius: var(--r-sm); padding: var(--sp-4) var(--sp-5); margin: var(--sp-5) 0; color: var(--color-text-soft); font-size: var(--fs-sm); }
 .callout strong { color: var(--c-gold-300); }
 
-.toc { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--r-md); padding: var(--sp-4) var(--sp-5); margin: var(--sp-5) 0; }
-.toc strong { display: block; margin-bottom: var(--sp-2); color: var(--c-gold-400); font-size: var(--fs-sm); }
-.toc ol { margin: 0; padding-left: 1.2em; columns: 2; }
-.toc a { color: var(--color-text-soft); font-size: var(--fs-sm); }
+/* ---------- 목차(TOC) — 프리미엄 ---------- */
+.toc {
+  position: relative; margin: var(--sp-6) 0 var(--sp-8);
+  padding: var(--sp-5) var(--sp-6);
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(201,169,106,.08), transparent 60%),
+    var(--color-surface);
+  border: 1px solid var(--color-border); border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+}
+.toc::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  border-radius: var(--r-md) 0 0 var(--r-md);
+  background: linear-gradient(180deg, var(--c-gold-400), var(--c-gold-700));
+}
+.toc strong {
+  display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-3);
+  color: var(--c-gold-300); font-size: var(--fs-sm); font-weight: 700;
+  letter-spacing: .04em;
+}
+.toc strong::before { content: "≡"; color: var(--c-gold-500); font-size: 1.05em; }
+.toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; columns: 2; column-gap: var(--sp-6); }
+.toc li { break-inside: avoid; margin: 0; }
+.toc a {
+  counter-increment: toc; display: flex; gap: var(--sp-3); align-items: baseline;
+  padding: 7px var(--sp-2); border-radius: var(--r-sm);
+  color: var(--color-text-soft); font-size: var(--fs-sm); line-height: 1.4;
+  transition: color .18s var(--ease), background .18s var(--ease), padding-left .18s var(--ease);
+}
+.toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  color: var(--c-gold-500); font-weight: 700; font-size: .82em; flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.toc a:hover { background: var(--color-accent-soft); color: var(--c-gold-200, var(--color-text)); padding-left: 12px; }
+.toc a.is-current { color: var(--c-gold-300); background: var(--color-accent-soft); }
 @media (max-width: 620px) { .toc ol { columns: 1; } }
 
 .faq details { border: 1px solid var(--color-border-soft); border-radius: var(--r-md); padding: var(--sp-3) var(--sp-4); margin: var(--sp-3) 0; background: var(--color-surface); transition: border-color .2s var(--ease); }

@@ -72,4 +72,34 @@
       });
     }
   } catch (e) { /* 실패해도 콘텐츠는 그대로 보임 */ }
+
+  // 목차(TOC) 스크롤 스파이 — 현재 보고 있는 섹션을 강조
+  try {
+    var tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+    if (tocLinks.length && "IntersectionObserver" in window) {
+      var linkById = {};
+      var headings = [];
+      tocLinks.forEach(function (a) {
+        var id = decodeURIComponent(a.getAttribute("href").slice(1));
+        var h = document.getElementById(id);
+        if (h) { linkById[id] = a; headings.push(h); }
+      });
+      var current = null;
+      function setCurrent(id) {
+        if (current === id) return;
+        current = id;
+        tocLinks.forEach(function (a) { a.classList.remove("is-current"); });
+        if (linkById[id]) linkById[id].classList.add("is-current");
+      }
+      var spy = new IntersectionObserver(function (entries) {
+        // 화면 상단에 가장 가까운, 보이는 헤딩을 현재로 표시
+        var visible = entries.filter(function (e) { return e.isIntersecting; });
+        if (visible.length) {
+          visible.sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+          setCurrent(visible[0].target.id);
+        }
+      }, { rootMargin: "-20% 0px -70% 0px", threshold: 0 });
+      headings.forEach(function (h) { spy.observe(h); });
+    }
+  } catch (e) { /* 스파이 실패 무시 */ }
 })();

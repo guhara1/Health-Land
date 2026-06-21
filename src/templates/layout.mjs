@@ -1,5 +1,6 @@
 import { site, primaryNav, programMenu } from "../../data/site.mjs";
 import { regionGroups, regionNameBySlug } from "../../data/regions.mjs";
+import { slugify } from "../../scripts/romanize.mjs";
 
 // HTML 이스케이프
 export const esc = (s = "") =>
@@ -140,6 +141,35 @@ function renderFooter() {
   )}</a>`;
 }
 
+// 본문 H2에 앵커 id를 부여하고, 클릭 시 이동하는 목차(TOC)를 자동 생성.
+// - 이미 수동 목차(class="toc")가 있는 페이지(프로그램 등)는 건너뜀.
+// - 콘텐츠형 페이지(H2 4개 이상)에만 삽입 → 인덱스/허브 페이지는 제외.
+function injectToc(body) {
+  if (!body || /class="toc"/.test(body)) return body;
+  const heads = [];
+  const used = new Set();
+  // id가 없는 H2에만 슬러그 id 부여
+  const withIds = body.replace(
+    /<h2(?![^>]*\sid=)([^>]*)>([\s\S]*?)<\/h2>/g,
+    (m, attrs, inner) => {
+      const text = inner.replace(/<[^>]+>/g, "").trim();
+      let base = (slugify(text) || "section").slice(0, 40).replace(/-+$/, "");
+      let id = base, n = 2;
+      while (used.has(id)) id = `${base}-${n++}`;
+      used.add(id);
+      heads.push({ id, text });
+      return `<h2${attrs} id="${id}">${inner}</h2>`;
+    }
+  );
+  if (heads.length < 4) return body;
+  const items = heads
+    .map((h) => `<li><a href="#${h.id}">${esc(h.text)}</a></li>`)
+    .join("");
+  const toc = `<nav class="toc" aria-label="이 페이지 목차"><strong>이 페이지 목차</strong><ol>${items}</ol></nav>`;
+  // 첫 번째 H2 바로 앞에 목차 삽입
+  return withIds.replace(/<h2[^>]*\sid=/, toc + "\n      $&");
+}
+
 // JSON-LD 직렬화
 const jsonld = (obj) =>
   `<script type="application/ld+json">${JSON.stringify(obj).replace(
@@ -162,6 +192,7 @@ export function layout(o) {
   const canonical = abs(o.path);
   const ogImage = abs(o.ogImage || "/assets/og-default.svg");
   const desc = o.description || site.tagline;
+  o = { ...o, body: injectToc(o.body) };
 
   // 히어로 대표 이미지는 CSS 배경(::after)이라 초기 문서에서 탐색되지 않는다.
   // LCP 조기 발견 + 높은 우선순위 확보를 위해 히어로가 있는 페이지에만 preload 주입.
