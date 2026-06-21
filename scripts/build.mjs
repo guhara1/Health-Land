@@ -17,7 +17,7 @@ import {
   gangwon, chungbuk, chungnam, jeonbuk, jeonnam, gyeongbuk, gyeongnam,
 } from "../data/provinces.mjs";
 import { buildSubwayPages } from "./subway-tree.mjs";
-import { subwayLines } from "../data/subway.mjs";
+import { subwaySystems } from "../data/subway.mjs";
 
 // 계층(시·구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
 const HIERARCHICAL = new Set([
@@ -567,7 +567,7 @@ function homePage() {
 
   const regionChips = [
     ...regions.map((r) => [`/region/${r.slug}/`, `${r.name}`]),
-    ...subwayLines.slice(0, 9).map((l) => [`/subway/line/${l.slug}/`, `${l.name}`]),
+    ...subwaySystems[0].lines.slice(0, 9).map((l) => [`/subway/line/${l.slug}/`, `${l.name}`]),
   ]
     .map(([u, t]) => `<a class="chip" href="${u}">${esc(t)}</a>`)
     .join("");
@@ -946,7 +946,7 @@ async function build() {
   // 지하철 노선/역 페이지 (인덱스 → 노선 → 역 정규 페이지)
   {
     let mn = Infinity, mx = 0, cnt = 0;
-    for (const pg of buildSubwayPages(subwayLines)) {
+    for (const pg of buildSubwayPages(subwaySystems)) {
       const m = pg.html.split("<main")[1];
       const len = m ? m.split("</main>")[0].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().length : 0;
       mn = Math.min(mn, len); mx = Math.max(mx, len); cnt++;
