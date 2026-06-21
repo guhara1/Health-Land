@@ -1,0 +1,250 @@
+import { site, primaryNav, programMenu } from "../../data/site.mjs";
+
+// HTML 이스케이프
+export const esc = (s = "") =>
+  String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+const abs = (url) => (url.startsWith("http") ? url : site.baseUrl + url);
+
+// 메가메뉴 렌더 (PC 4열 / 모바일 아코디언 공용 마크업)
+function renderMega() {
+  const cols = programMenu
+    .map(
+      (g) => `
+        <div class="mega-col">
+          <h4>${esc(g.group)}</h4>
+          <ul>
+            ${g.items
+              .map(
+                (i) =>
+                  `<li><a href="/program/${i.slug}/">${esc(i.label)}</a></li>`
+              )
+              .join("\n            ")}
+          </ul>
+        </div>`
+    )
+    .join("");
+  return `<div class="mega"><div class="mega-grid">${cols}</div></div>`;
+}
+
+function renderNav(currentPath) {
+  const items = primaryNav
+    .map((item) => {
+      const active = item.url === currentPath ? ' aria-current="page"' : "";
+      if (item.mega) {
+        return `<li class="has-mega">
+          <a href="${item.url}" aria-haspopup="true" aria-expanded="false"${active}>${esc(
+          item.label
+        )}</a>
+          ${renderMega()}
+        </li>`;
+      }
+      return `<li><a href="${item.url}"${active}>${esc(item.label)}</a></li>`;
+    })
+    .join("\n        ");
+  return `<nav class="nav" id="primary-nav" aria-label="주 메뉴"><ul>${items}</ul></nav>`;
+}
+
+function renderHeader(currentPath) {
+  return `
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="${esc(site.name)} 홈">
+        <span class="brand-mark">HL</span>
+        <span>${esc(site.name)}<small>${esc(site.tagline)}</small></span>
+      </a>
+      ${renderNav(currentPath)}
+      <a class="header-cta desktop" href="${site.phoneHref}">📞 전화예약 ${esc(
+    site.phone
+  )}</a>
+      <button class="nav-toggle" aria-label="메뉴 열기" aria-controls="primary-nav" aria-expanded="false">☰</button>
+    </div>
+  </header>
+  <div class="nav-backdrop"></div>`;
+}
+
+function renderFooter() {
+  const progCols = programMenu.slice(0, 2);
+  const footProg = progCols
+    .map(
+      (g) => `
+        <div>
+          <h4>${esc(g.group)}</h4>
+          <ul>
+            ${g.items
+              .slice(0, 6)
+              .map(
+                (i) => `<li><a href="/program/${i.slug}/">${esc(i.label)}</a></li>`
+              )
+              .join("\n            ")}
+          </ul>
+        </div>`
+    )
+    .join("");
+
+  return `
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h4>${esc(site.name)}</h4>
+          <p>${esc(site.tagline)}</p>
+          <p class="phone"><a href="${site.phoneHref}">${esc(site.phone)}</a></p>
+          <p>전화예약으로 지역·프로그램·이용 조건을 안내받을 수 있습니다.</p>
+        </div>
+        ${footProg}
+        <div>
+          <h4>안내</h4>
+          <ul>
+            <li><a href="/guide/">예약 가이드</a></li>
+            <li><a href="/about/">이용 안내</a></li>
+            <li><a href="/region/">지역별 찾기</a></li>
+            <li><a href="/subway/">지하철역별 찾기</a></li>
+            <li><a href="/program/">마사지 프로그램</a></li>
+            <li><a href="/contact/">문의하기</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© ${new Date().getFullYear()} ${esc(site.name)}. 전화예약 ${esc(
+    site.phone
+  )}</p>
+        <p class="disclaimer">본 사이트는 출장마사지·홈케어 업체 정보를 안내하는 플랫폼이며, 모든 가격·운영 정보는 변동될 수 있으므로 예약 전 업체에 직접 확인하시기 바랍니다. 건전한 관리 서비스만을 안내합니다.</p>
+      </div>
+    </div>
+  </footer>
+  <a class="mobile-callbar" href="${site.phoneHref}">📞 전화예약 ${esc(
+    site.phone
+  )}</a>`;
+}
+
+// JSON-LD 직렬화
+const jsonld = (obj) =>
+  `<script type="application/ld+json">${JSON.stringify(obj).replace(
+    /</g,
+    "\\u003c"
+  )}</script>`;
+
+/**
+ * 페이지 레이아웃
+ * @param {object} o
+ * @param {string} o.title - <title>
+ * @param {string} o.description - 메타 디스크립션 (80자 이내 권장)
+ * @param {string} o.path - 현재 경로 (예: /program/swedish/)
+ * @param {string} o.body - 본문 HTML
+ * @param {string} [o.ogImage] - 선호 썸네일 경로
+ * @param {object[]} [o.structuredData] - 추가 JSON-LD 객체 배열
+ * @param {Array<{name,url}>} [o.breadcrumb]
+ */
+export function layout(o) {
+  const canonical = abs(o.path);
+  const ogImage = abs(o.ogImage || "/assets/og-default.svg");
+  const desc = o.description || site.tagline;
+
+  // 조직(LocalBusiness) 기본 JSON-LD
+  const orgLd = {
+    "@context": "https://schema.org",
+    "@type": "HealthAndBeautyBusiness",
+    name: site.name,
+    description: site.tagline,
+    url: site.baseUrl,
+    telephone: site.phone,
+    image: ogImage,
+    areaServed: "KR",
+    knowsLanguage: "ko",
+  };
+
+  const breadcrumbLd = o.breadcrumb
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: o.breadcrumb.map((b, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: b.name,
+          item: abs(b.url),
+        })),
+      }
+    : null;
+
+  const extra = (o.structuredData || [])
+    .concat(breadcrumbLd ? [breadcrumbLd] : [])
+    .map(jsonld)
+    .join("\n  ");
+
+  return `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${esc(o.title)}</title>
+  <meta name="description" content="${esc(desc)}" />
+  <link rel="canonical" href="${canonical}" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="author" content="${esc(site.author.name)}" />
+
+  <!-- Open Graph / 선호 썸네일 지정 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="${esc(site.name)}" />
+  <meta property="og:title" content="${esc(o.title)}" />
+  <meta property="og:description" content="${esc(desc)}" />
+  <meta property="og:url" content="${canonical}" />
+  <meta property="og:image" content="${ogImage}" />
+  <meta property="og:locale" content="${site.locale}" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="/assets/styles.css" />
+
+  ${jsonld(orgLd)}
+  ${extra}
+</head>
+<body>
+  ${renderHeader(o.path)}
+  <main id="main">
+    ${o.body}
+  </main>
+  ${renderFooter()}
+  <script src="/assets/main.js" defer></script>
+</body>
+</html>`;
+}
+
+// FAQPage JSON-LD 헬퍼
+export const faqLd = (faqs) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+});
+
+// Article JSON-LD 헬퍼 (E-E-A-T: author/reviewer/dateModified)
+export const articleLd = (o) => ({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: o.headline,
+  description: o.description,
+  image: abs(o.image || "/assets/og-default.svg"),
+  datePublished: o.published || "2026-01-10",
+  dateModified: o.modified || "2026-06-21",
+  author: {
+    "@type": "Organization",
+    name: site.author.name,
+    url: site.baseUrl + "/about/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: site.name,
+    url: site.baseUrl,
+  },
+  mainEntityOfPage: abs(o.path),
+});

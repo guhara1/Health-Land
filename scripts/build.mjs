@@ -1,0 +1,757 @@
+import { mkdir, writeFile, copyFile, readdir, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { site, primaryNav, programMenu } from "../data/site.mjs";
+import { programs, programBySlug } from "../data/programs.mjs";
+import { extra as programExtra, regionNote } from "../data/programs-extra.mjs";
+import { regions, subways, placeBySlug } from "../data/regions.mjs";
+import { layout, esc, faqLd, articleLd } from "../src/templates/layout.mjs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, "..");
+const DIST = join(ROOT, "dist");
+
+const MODIFIED = "2026-06-21";
+
+// ---------- 유틸 ----------
+async function write(path, html) {
+  const full = join(DIST, path);
+  await mkdir(dirname(full), { recursive: true });
+  await writeFile(full, html, "utf8");
+}
+
+const programUrl = (slug) => `/program/${slug}/`;
+const labelOf = (slug) => programBySlug[slug]?.label || slug;
+
+// 본문 글자 수(태그 제외, 한글 기준) 카운트 — 도어웨이 방지 검증용
+function textLen(html) {
+  return html.replace(/<[^>]+>/g, "").replace(/\s+/g, "").length;
+}
+
+// 작성자/검수 박스 (E-E-A-T)
+function authorBox() {
+  return `
+  <aside class="author-box">
+    <div class="avatar">HL</div>
+    <div class="meta">
+      <strong>${esc(site.author.name)}</strong> · ${esc(site.author.role)}
+      <p>${esc(site.author.bio)}</p>
+      <p class="updated">최종 수정일 ${MODIFIED} · 검수: ${esc(site.author.reviewer)}</p>
+    </div>
+  </aside>`;
+}
+
+// 프로그램 -> 지역 내부링크 (롱테일)
+function regionLinks() {
+  const links = [
+    ["/region/seoul/", "서울 출장마사지"],
+    ["/region/gangnam/", "강남 출장마사지"],
+    ["/region/busan/", "부산 출장마사지"],
+    ["/region/suwon/", "수원 출장마사지"],
+    ["/subway/seoul-line2/", "서울 2호선 출장마사지"],
+    ["/subway/gangnam-station/", "강남역 출장마사지"],
+    ["/guide/", "예약 전 체크리스트"],
+    ["/about/", "처음 이용 안내"],
+  ];
+  return `<div class="link-cloud">${links
+    .map(([u, t]) => `<a href="${u}">${esc(t)}</a>`)
+    .join("")}</div>`;
+}
+
+// ---------- 프로그램 페이지 ----------
+function programPage(p) {
+  const ex = programExtra[p.slug] || {};
+  const faqs = p.faqs.map((f) => ({ q: f.q, a: f.a }));
+  if (ex.faq) faqs.push({ q: ex.faq.q, a: ex.faq.a });
+  const careBlock = p.care
+    ? `<h2 id="care">${esc(p.label)} 이용 시 처음 헷갈리는 부분</h2><p>${esc(
+        p.care
+      )}</p>`
+    : "";
+  const flowBlock = ex.flow
+    ? `<h2 id="flow">이용 흐름과 관리 구성</h2><p>${esc(ex.flow)}</p>`
+    : "";
+  const notesBlock = ex.notes
+    ? `<h2 id="notes">더 알아두면 좋은 점·주의사항</h2><p>${esc(ex.notes)}</p>`
+    : "";
+
+  const body = `
+  <nav class="breadcrumb container" aria-label="위치">
+    <a href="/">홈</a><span>›</span><a href="/program/">마사지 프로그램</a><span>›</span>${esc(
+      p.label
+    )}
+  </nav>
+  <article class="section-tight">
+    <div class="container prose">
+      <p class="card-tag" style="color:var(--color-accent);font-weight:700;">${esc(
+        p.group
+      )}</p>
+      <h1>${esc(p.h1)}</h1>
+
+      <div class="toc">
+        <strong>이 페이지 목차</strong>
+        <ol>
+          <li><a href="#overview">프로그램 개요</a></li>
+          <li><a href="#flow">이용 흐름과 관리 구성</a></li>
+          <li><a href="#who">이런 분들이 많이 찾는 경우</a></li>
+          <li><a href="#outcall">출장마사지와 함께 볼 때 확인할 점</a></li>
+          <li><a href="#hometai">홈타이 이용 시 비교할 부분</a></li>
+          <li><a href="#notes">더 알아두면 좋은 점·주의사항</a></li>
+          <li><a href="#checklist">예약 전 체크리스트</a></li>
+          <li><a href="#region">지역별 관련 페이지</a></li>
+          <li><a href="#faq">자주 묻는 질문</a></li>
+        </ol>
+      </div>
+
+      <h2 id="overview">${esc(p.label)}는 어떤 관리인가 (프로그램 개요)</h2>
+      ${p.intro.map((t) => `<p>${esc(t)}</p>`).join("\n      ")}
+      ${careBlock}
+      ${flowBlock}
+
+      <h2 id="who">이런 분들이 많이 찾는 경우</h2>
+      <p>${esc(p.whoIntro)}</p>
+      <ul>${p.whoList.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+
+      <h2 id="outcall">출장마사지로 이용할 때 확인할 부분</h2>
+      <p>${esc(p.outcall)}</p>
+
+      <h2 id="hometai">홈타이와 함께 비교할 점</h2>
+      <p>${esc(p.hometai)}</p>
+      ${notesBlock}
+
+      <h2 id="checklist">예약 전 체크리스트</h2>
+      <ul>${p.checklist.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+      <div class="callout">표시된 정보와 가격은 변동될 수 있으므로, <strong>실제 이용 가능 여부와 비용은 예약 전 ${esc(
+        site.phone
+      )}로 직접 확인</strong>하는 것이 정확합니다.</div>
+
+      <h2 id="region">지역별 ${esc(p.label)} 및 관련 페이지</h2>
+      ${
+        regionNote[p.slug]
+          ? `<p>${esc(regionNote[p.slug])}</p>`
+          : "<p>원하는 지역과 이용 방식에 따라 아래 페이지를 함께 확인하면 선택 기준을 잡기 쉽습니다.</p>"
+      }
+      ${regionLinks()}
+
+      <h2 id="faq">자주 묻는 질문</h2>
+      <div class="faq">
+        ${faqs
+          .map(
+            (f) =>
+              `<details><summary>${esc(f.q)}</summary><p>${esc(
+                f.a
+              )}</p></details>`
+          )
+          .join("\n        ")}
+      </div>
+
+      ${authorBox()}
+
+      <p><a class="btn btn-primary" href="${site.phoneHref}">📞 ${esc(
+    p.label
+  )} 전화예약 ${esc(site.phone)}</a></p>
+    </div>
+  </article>`;
+
+  const structured = [
+    faqLd(faqs),
+    articleLd({
+      headline: p.h1,
+      description: p.desc,
+      path: programUrl(p.slug),
+      modified: MODIFIED,
+    }),
+  ];
+
+  const html = layout({
+    title: `${p.h1} | ${site.name}`,
+    description: p.desc,
+    path: programUrl(p.slug),
+    body,
+    structuredData: structured,
+    breadcrumb: [
+      { name: "홈", url: "/" },
+      { name: "마사지 프로그램", url: "/program/" },
+      { name: p.label, url: programUrl(p.slug) },
+    ],
+  });
+
+  // 도어웨이 방지: 본문 길이 점검 (공백 포함 글자 수 기준 2000~2500자 목표)
+  const withSpaces = body
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim().length;
+  const len = textLen(body);
+  if (withSpaces < 2000) {
+    console.warn(`  ⚠️  ${p.slug}: 본문 ${withSpaces}자 (목표 2000자 이상)`);
+  }
+  return { html, len: withSpaces };
+}
+
+// ---------- 프로그램 인덱스 ----------
+function programIndex() {
+  const groups = programMenu
+    .map(
+      (g) => `
+      <div class="section-head" style="margin-top:var(--sp-6)"><span class="eyebrow">${esc(
+        g.group
+      )}</span></div>
+      <div class="grid grid-3">
+        ${g.items
+          .map((i) => {
+            const p = programBySlug[i.slug];
+            return `<a class="card" href="${programUrl(i.slug)}">
+              <span class="card-tag">${esc(g.group)}</span>
+              <h3>${esc(i.label)}</h3>
+              <p>${esc((p?.intro?.[0] || "").slice(0, 60))}…</p>
+            </a>`;
+          })
+          .join("\n        ")}
+      </div>`
+    )
+    .join("");
+
+  const body = `
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">마사지 프로그램</p>
+      <h1>관리 방식·이용 조건별 마사지 프로그램 안내</h1>
+      <p>스웨디시·타이마사지·아로마테라피 등 관리 방식부터 홈케어(방문)·24시간 같은 이용 조건까지, 예약 전 비교 기준을 정리했습니다.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="${site.phoneHref}">📞 전화예약 ${esc(
+    site.phone
+  )}</a>
+        <a class="btn btn-outline" href="/guide/">예약 가이드 보기</a>
+      </div>
+    </div>
+  </section>
+  <section class="section"><div class="container">
+    ${groups}
+  </div></section>`;
+
+  return layout({
+    title: `마사지 프로그램 안내 | ${site.name}`,
+    description:
+      "스웨디시·타이마사지·아로마 등 마사지 프로그램과 홈케어·24시간 이용 조건을 비교 안내합니다.",
+    path: "/program/",
+    body,
+    breadcrumb: [
+      { name: "홈", url: "/" },
+      { name: "마사지 프로그램", url: "/program/" },
+    ],
+  });
+}
+
+// ---------- 지역 / 지하철 페이지 ----------
+function placePage(r, baseUrl) {
+  const progCards = r.programs
+    .map((slug) => {
+      const p = programBySlug[slug];
+      return `<a class="card" href="${programUrl(slug)}">
+        <span class="card-tag">${esc(p.group)}</span>
+        <h3>${esc(p.label)}</h3>
+        <p>${esc((p.intro[0] || "").slice(0, 56))}…</p>
+      </a>`;
+    })
+    .join("\n        ");
+
+  const nearby = (r.nearby || [])
+    .map((s) => {
+      const n = placeBySlug[s];
+      const base = n.type === "subway" ? "/subway/" : "/region/";
+      return `<a href="${base}${n.slug}/">${esc(n.name)} 출장마사지</a>`;
+    })
+    .join("");
+
+  const faqs = [
+    {
+      q: `${r.name} 출장마사지는 어떻게 예약하나요?`,
+      a: `전화로 원하는 지역, 프로그램, 시간을 알리면 방문 가능 여부와 소요 시간을 안내받을 수 있습니다. 예약 전 비용과 포함 범위도 함께 확인하세요.`,
+    },
+    {
+      q: `${r.name}에서 받을 수 있는 프로그램은 무엇인가요?`,
+      a: `스웨디시, 아로마테라피, 타이마사지 등 다양한 프로그램을 비교할 수 있습니다. 원하는 관리 방식에 따라 선택 기준이 달라집니다.`,
+    },
+    {
+      q: `방문까지 얼마나 걸리나요?`,
+      a: `출발지와 시간대에 따라 다릅니다. 정확한 방문 소요 시간은 예약 시 확인하는 것이 좋습니다.`,
+    },
+  ];
+
+  const body = `
+  <nav class="breadcrumb container" aria-label="위치">
+    <a href="/">홈</a><span>›</span><a href="${baseUrl}">${
+    r.type === "subway" ? "지하철역별 찾기" : "지역별 찾기"
+  }</a><span>›</span>${esc(r.name)}
+  </nav>
+  <article class="section-tight"><div class="container prose">
+    <h1>${esc(r.h1)}</h1>
+    ${r.intro.map((t) => `<p>${esc(t)}</p>`).join("\n    ")}
+
+    <h2>${esc(r.name)}에서 비교해 볼 만한 마사지 프로그램</h2>
+    <div class="grid grid-3" style="margin:var(--sp-4) 0">
+      ${progCards}
+    </div>
+
+    <p>${esc(r.closing)}</p>
+
+    ${
+      nearby
+        ? `<h2>인근 지역·노선</h2><div class="link-cloud">${nearby}</div>`
+        : ""
+    }
+
+    <div class="callout">표시 정보는 변동될 수 있습니다. <strong>실제 방문 가능 여부와 비용은 ${esc(
+      site.phone
+    )}로 확인</strong>하세요.</div>
+
+    <h2>자주 묻는 질문</h2>
+    <div class="faq">
+      ${faqs
+        .map(
+          (f) => `<details><summary>${esc(f.q)}</summary><p>${esc(
+            f.a
+          )}</p></details>`
+        )
+        .join("\n      ")}
+    </div>
+
+    ${authorBox()}
+    <p><a class="btn btn-primary" href="${site.phoneHref}">📞 ${esc(
+    r.name
+  )} 출장마사지 전화예약 ${esc(site.phone)}</a></p>
+  </div></article>`;
+
+  const path = `${baseUrl}${r.slug}/`;
+  return layout({
+    title: `${r.h1} | ${site.name}`,
+    description: r.desc,
+    path,
+    body,
+    structuredData: [
+      faqLd(faqs),
+      articleLd({ headline: r.h1, description: r.desc, path, modified: MODIFIED }),
+    ],
+    breadcrumb: [
+      { name: "홈", url: "/" },
+      {
+        name: r.type === "subway" ? "지하철역별 찾기" : "지역별 찾기",
+        url: baseUrl,
+      },
+      { name: r.name, url: path },
+    ],
+  });
+}
+
+function placeIndex(list, baseUrl, title, eyebrow, lead) {
+  const cards = list
+    .map(
+      (r) => `<a class="card" href="${baseUrl}${r.slug}/">
+        <h3>${esc(r.name)} 출장마사지</h3>
+        <p>${esc((r.intro[0] || "").slice(0, 64))}…</p>
+      </a>`
+    )
+    .join("\n        ");
+  const body = `
+  <section class="hero"><div class="container">
+    <p class="eyebrow">${esc(eyebrow)}</p>
+    <h1>${esc(title)}</h1>
+    <p>${esc(lead)}</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold" href="${site.phoneHref}">📞 전화예약 ${esc(
+    site.phone
+  )}</a>
+      <a class="btn btn-outline" href="/program/">프로그램 보기</a>
+    </div>
+  </div></section>
+  <section class="section"><div class="container">
+    <div class="grid grid-3">${cards}</div>
+  </div></section>`;
+  return layout({
+    title: `${title} | ${site.name}`,
+    description: lead.slice(0, 78),
+    path: baseUrl,
+    body,
+    breadcrumb: [
+      { name: "홈", url: "/" },
+      { name: eyebrow, url: baseUrl },
+    ],
+  });
+}
+
+// ---------- 홈 ----------
+function homePage() {
+  const topPrograms = ["swedish", "thai-massage", "aroma-therapy", "foot-massage"];
+  const progCards = topPrograms
+    .map((slug) => {
+      const p = programBySlug[slug];
+      return `<a class="card" href="${programUrl(slug)}">
+        <span class="card-tag">${esc(p.group)}</span>
+        <h3>${esc(p.label)}</h3>
+        <p>${esc((p.intro[0] || "").slice(0, 60))}…</p>
+      </a>`;
+    })
+    .join("\n        ");
+
+  const regionChips = [
+    ...regions.map((r) => [`/region/${r.slug}/`, `${r.name} 출장마사지`]),
+    ...subways.map((s) => [`/subway/${s.slug}/`, `${s.name} 출장마사지`]),
+  ]
+    .map(([u, t]) => `<a class="chip" href="${u}">${esc(t)}</a>`)
+    .join("");
+
+  const body = `
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">${esc(site.tagline)}</p>
+      <h1>믿고 이용하는 출장마사지·홈케어 정보, 헬스랜드</h1>
+      <p>스웨디시·타이마사지·아로마테라피부터 홈케어(방문)·24시간 이용까지. 예약 전 꼭 확인할 기준을 정리해 안내합니다. 가격·운영 정보는 변동될 수 있으니 예약 전 직접 확인하세요.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="${site.phoneHref}">📞 전화예약 ${esc(
+    site.phone
+  )}</a>
+        <a class="btn btn-outline" href="/program/">마사지 프로그램 보기</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section"><div class="container">
+    <div class="section-head"><span class="eyebrow">인기 관리 프로그램</span>
+      <h2>관리 방식부터 골라 보세요</h2>
+      <p>처음 이용한다면 부드러운 스웨디시나 부분 관리인 발마사지부터 비교해 보는 것이 좋습니다.</p>
+    </div>
+    <div class="grid grid-4">${progCards}</div>
+    <p style="margin-top:var(--sp-5)"><a class="btn btn-outline" href="/program/">전체 마사지 프로그램 보기</a></p>
+  </div></section>
+
+  <section class="section section-alt"><div class="container">
+    <div class="section-head"><span class="eyebrow">지역·지하철역별 찾기</span>
+      <h2>가까운 지역으로 빠르게 확인</h2>
+      <p>서울 출장마사지, 강남 출장마사지, 부산 출장마사지 등 지역과 지하철역 기준으로 안내를 확인할 수 있습니다.</p>
+    </div>
+    <div class="chip-row">${regionChips}</div>
+  </div></section>
+
+  <section class="section"><div class="container">
+    <div class="section-head"><span class="eyebrow">헬스랜드를 이용하는 이유</span>
+      <h2>광고 문구보다 ‘확인 기준’을 먼저 안내합니다</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card"><h3>실제 확인 기준 중심</h3><p>자극적인 추천 대신 예약 전 확인해야 할 프로그램 구성·이용 시간·추가 비용 기준을 안내합니다.</p></div>
+      <div class="card"><h3>편집팀 검수 정보</h3><p>업체 정보를 정리·검수하고 이용자 문의를 바탕으로 안내 기준을 지속적으로 업데이트합니다.</p></div>
+      <div class="card"><h3>예약 전 직접 확인 권장</h3><p>가격·운영 정보는 변동될 수 있으므로 예약 전 ${esc(
+        site.phone
+      )}로 직접 확인하도록 안내합니다.</p></div>
+    </div>
+  </div></section>
+
+  <section class="section section-alt"><div class="container">
+    <div class="section-head"><span class="eyebrow">예약 가이드</span>
+      <h2>처음이라면 이 순서대로 확인하세요</h2>
+    </div>
+    <div class="grid grid-4">
+      <div class="card"><span class="card-tag">STEP 1</span><h3>지역 확인</h3><p>방문 가능 지역과 도착 소요 시간을 먼저 확인합니다.</p></div>
+      <div class="card"><span class="card-tag">STEP 2</span><h3>프로그램 선택</h3><p>원하는 관리 방식과 이용 조건을 정합니다.</p></div>
+      <div class="card"><span class="card-tag">STEP 3</span><h3>조건 확인</h3><p>시간·비용·추가 요금·위생을 점검합니다.</p></div>
+      <div class="card"><span class="card-tag">STEP 4</span><h3>전화예약</h3><p>${esc(
+        site.phone
+      )}로 최종 확인 후 예약합니다.</p></div>
+    </div>
+  </div></section>`;
+
+  return layout({
+    title: `${site.name} | ${site.tagline}`,
+    description:
+      "스웨디시·타이·아로마 등 출장마사지와 홈케어 정보를 예약 전 확인 기준 중심으로 안내합니다.",
+    path: "/",
+    body,
+  });
+}
+
+// ---------- 정적 안내 페이지 ----------
+function simplePage({ path, eyebrow, h1, desc, sections, faqs }) {
+  const faqBlock = faqs
+    ? `<h2>자주 묻는 질문</h2><div class="faq">${faqs
+        .map(
+          (f) => `<details><summary>${esc(f.q)}</summary><p>${esc(
+            f.a
+          )}</p></details>`
+        )
+        .join("")}</div>`
+    : "";
+  const body = `
+  <nav class="breadcrumb container" aria-label="위치"><a href="/">홈</a><span>›</span>${esc(
+    h1
+  )}</nav>
+  <article class="section-tight"><div class="container prose">
+    <p class="card-tag" style="color:var(--color-accent);font-weight:700">${esc(
+      eyebrow
+    )}</p>
+    <h1>${esc(h1)}</h1>
+    ${sections}
+    ${faqBlock}
+    ${authorBox()}
+    <p><a class="btn btn-primary" href="${site.phoneHref}">📞 전화예약 ${esc(
+    site.phone
+  )}</a></p>
+  </div></article>`;
+  const structured = faqs ? [faqLd(faqs)] : [];
+  return layout({
+    title: `${h1} | ${site.name}`,
+    description: desc,
+    path,
+    body,
+    structuredData: structured,
+    breadcrumb: [
+      { name: "홈", url: "/" },
+      { name: h1, url: path },
+    ],
+  });
+}
+
+function outcallPage() {
+  return simplePage({
+    path: "/outcall/",
+    eyebrow: "출장마사지",
+    h1: "출장마사지 이용 안내와 예약 전 확인 기준",
+    desc: "출장마사지의 이용 방식과 예약 전 확인 기준, 프로그램·지역별 안내를 정리했습니다.",
+    sections: `
+      <p>출장마사지는 관리사가 자택이나 숙소로 방문해 관리를 진행하는 이용 방식입니다. 매장을 찾아갈 필요가 없어 이동이 어렵거나 편한 공간에서 받고 싶은 분들이 선택합니다. ‘홈타이’ 역시 방문형 타이식 관리를 가리키는 표현으로, 출장마사지의 한 형태로 이해하면 됩니다.</p>
+      <h2>출장마사지 예약 전 확인 기준</h2>
+      <ul>
+        <li>방문 가능 지역과 도착 소요 시간</li>
+        <li>원하는 프로그램(스웨디시·타이·아로마 등)과 시간</li>
+        <li>관리 공간·타월 등 준비물</li>
+        <li>총 비용과 방문비·심야 추가 요금 포함 여부</li>
+        <li>위생 관리와 응대 방식</li>
+      </ul>
+      <h2>관리 방식별로 비교하기</h2>
+      <p>부드러운 오일 관리를 원한다면 <a href="/program/swedish/">스웨디시</a>나 <a href="/program/aroma-therapy/">아로마테라피</a>, 스트레칭 위주라면 <a href="/program/thai-massage/">타이마사지</a>, 부분 관리는 <a href="/program/foot-massage/">발마사지</a>를 비교해 보세요. 방문 이용 방식은 <a href="/program/home-care/">홈케어(방문)</a> 페이지에서 자세히 확인할 수 있습니다.</p>
+      <h2>지역별 출장마사지</h2>
+      ${regionLinks()}`,
+    faqs: [
+      {
+        q: "출장마사지와 홈타이는 다른가요?",
+        a: "둘 다 방문형 관리라는 점에서 같은 맥락입니다. 홈타이는 방문형 타이식 관리를 가리키는 표현으로 많이 쓰입니다.",
+      },
+      {
+        q: "예약은 어떻게 하나요?",
+        a: `${site.phone}로 원하는 지역·프로그램·시간을 알리면 방문 가능 여부와 비용을 안내받을 수 있습니다.`,
+      },
+    ],
+  });
+}
+
+function guidePage() {
+  return simplePage({
+    path: "/guide/",
+    eyebrow: "예약 가이드",
+    h1: "출장마사지 예약 가이드와 예약 전 체크리스트",
+    desc: "출장마사지 예약 순서와 예약 전 체크리스트, 비용·위생 확인 기준을 정리했습니다.",
+    sections: `
+      <p>처음 이용하는 분들을 위해 예약 순서와 확인 기준을 정리했습니다. 아래 순서대로 확인하면 예상과 다른 상황을 줄일 수 있습니다.</p>
+      <h2>예약 순서</h2>
+      <ol>
+        <li><strong>지역 확인</strong> — 방문 가능 지역과 도착 소요 시간을 먼저 확인합니다.</li>
+        <li><strong>프로그램 선택</strong> — 원하는 관리 방식과 이용 조건(수면 가능·24시간 등)을 정합니다.</li>
+        <li><strong>조건 확인</strong> — 이용 시간, 총 비용, 추가 요금, 위생 관리를 점검합니다.</li>
+        <li><strong>전화예약</strong> — ${site.phone}로 최종 확인 후 예약합니다.</li>
+      </ol>
+      <h2>예약 전 체크리스트</h2>
+      <ul>
+        <li>방문 가능 지역 / 방문 소요 시간</li>
+        <li>프로그램 구성 / 총 관리 시간</li>
+        <li>표시 가격에 방문비·심야 요금 포함 여부</li>
+        <li>관리사 성별 지정 가능 여부</li>
+        <li>위생(일회성 소모품 등) 관리 방식</li>
+        <li>관리 공간·타월 등 준비물</li>
+      </ul>
+      <div class="callout">가격·운영 정보는 변동될 수 있습니다. <strong>최종 조건은 예약 시 ${esc(
+        site.phone
+      )}로 확인</strong>하세요.</div>
+      <h2>프로그램·지역 안내</h2>
+      ${regionLinks()}`,
+    faqs: [
+      {
+        q: "당일 예약도 가능한가요?",
+        a: "예약 상황에 따라 다릅니다. 원하는 시간과 지역을 알리고 가능 여부를 확인하세요.",
+      },
+      {
+        q: "비용은 어떻게 확인하나요?",
+        a: "표시 가격에 방문비·추가 요금이 포함되는지 예약 시 확인하면 최종 금액을 정확히 알 수 있습니다.",
+      },
+    ],
+  });
+}
+
+function aboutPage() {
+  return simplePage({
+    path: "/about/",
+    eyebrow: "이용 안내",
+    h1: "헬스랜드 이용 안내와 편집·운영 정책",
+    desc: "헬스랜드 소개와 편집·운영 정책, 정보 신뢰성에 대한 안내를 정리했습니다.",
+    sections: `
+      <p>${esc(site.legalName)}은(는) 전국 출장마사지·홈케어 업체 정보를 정리해 이용자가 예약 전 확인해야 할 기준을 안내하는 플랫폼입니다.</p>
+      <h2>편집·운영 정책</h2>
+      <p>${esc(site.editorialPolicy)}</p>
+      <h2>정보 신뢰성</h2>
+      <p>${esc(site.author.bio)} 안내 내용은 이용자 문의와 업체 확인을 바탕으로 주기적으로 업데이트되며, 최종 수정일을 각 페이지에 표기합니다.</p>
+      <h2>책임 안내</h2>
+      <ul>
+        <li>본 사이트는 건전한 관리 서비스 정보만을 안내합니다.</li>
+        <li>모든 가격·운영 정보는 변동될 수 있으므로 예약 전 업체에 직접 확인하시기 바랍니다.</li>
+        <li>안내 내용은 참고 자료이며, 실제 이용 조건은 업체와의 예약 과정에서 확정됩니다.</li>
+      </ul>
+      <h2>문의</h2>
+      <p>이용 관련 문의는 <a href="/contact/">문의하기</a> 또는 전화 ${esc(
+        site.phone
+      )}로 가능합니다.</p>`,
+    faqs: [
+      {
+        q: "헬스랜드는 어떤 사이트인가요?",
+        a: "출장마사지·홈케어 업체 정보를 정리하고 예약 전 확인 기준을 안내하는 정보 플랫폼입니다.",
+      },
+      {
+        q: "정보는 얼마나 자주 업데이트되나요?",
+        a: "이용자 문의와 업체 확인을 바탕으로 주기적으로 업데이트하며, 각 페이지에 최종 수정일을 표기합니다.",
+      },
+    ],
+  });
+}
+
+function contactPage() {
+  return simplePage({
+    path: "/contact/",
+    eyebrow: "문의하기",
+    h1: "헬스랜드 전화예약·문의 안내",
+    desc: "헬스랜드 전화예약·문의 방법과 예약 시 안내할 내용, 이용 시간을 정리했습니다.",
+    sections: `
+      <p>예약과 문의는 전화로 가장 빠르게 안내받을 수 있습니다.</p>
+      <div class="callout"><strong>전화예약 ${esc(site.phone)}</strong> · 원하는 지역, 프로그램, 시간을 알려 주시면 방문 가능 여부와 비용을 안내해 드립니다.</div>
+      <h2>예약 시 알려 주시면 좋은 내용</h2>
+      <ul>
+        <li>방문 희망 지역(예: 서울, 강남, 부산, 수원)</li>
+        <li>원하는 프로그램(스웨디시·타이·아로마 등)</li>
+        <li>희망 시간과 관리 시간</li>
+        <li>관리사 성별 지정 등 추가 요청</li>
+      </ul>
+      <h2>바로 확인하기</h2>
+      ${regionLinks()}`,
+    faqs: [
+      {
+        q: "전화 외에 예약 방법이 있나요?",
+        a: `가장 빠른 방법은 전화예약입니다. ${site.phone}로 연락 주시면 안내해 드립니다.`,
+      },
+      {
+        q: "예약 시 무엇을 준비하면 되나요?",
+        a: "방문 지역, 원하는 프로그램, 희망 시간을 미리 정해 두면 안내가 빠릅니다.",
+      },
+    ],
+  });
+}
+
+// ---------- 에셋 / 사이트맵 ----------
+async function copyAssets() {
+  const src = join(ROOT, "src", "assets");
+  const dest = join(DIST, "assets");
+  await mkdir(dest, { recursive: true });
+  for (const f of await readdir(src)) {
+    await copyFile(join(src, f), join(dest, f));
+  }
+  // 기본 OG 이미지 / 파비콘(SVG)
+  const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c2a26"/><stop offset="1" stop-color="#1b463d"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1010" cy="120" r="220" fill="#c9a96a" opacity="0.15"/><text x="80" y="300" font-family="Pretendard, sans-serif" font-size="84" font-weight="800" fill="#faf7f1">헬스랜드</text><text x="80" y="390" font-family="Pretendard, sans-serif" font-size="40" fill="#e3cfa3">출장마사지·홈케어 정보 안내</text><text x="80" y="470" font-family="Pretendard, sans-serif" font-size="36" font-weight="700" fill="#8fb3a8">전화예약 0508-202-4711</text></svg>`;
+  await writeFile(join(dest, "og-default.svg"), og, "utf8");
+  const fav = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#12352f"/><text x="32" y="42" text-anchor="middle" font-family="Pretendard, sans-serif" font-size="28" font-weight="800" fill="#c9a96a">HL</text></svg>`;
+  await writeFile(join(dest, "favicon.svg"), fav, "utf8");
+}
+
+function sitemap(urls) {
+  const body = urls
+    .map(
+      (u) =>
+        `  <url><loc>${site.baseUrl}${u}</loc><lastmod>${MODIFIED}</lastmod></url>`
+    )
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
+}
+
+// ---------- 메인 ----------
+async function build() {
+  if (existsSync(DIST)) await rm(DIST, { recursive: true, force: true });
+  await mkdir(DIST, { recursive: true });
+
+  const urls = [];
+  const add = async (path, file, html) => {
+    await write(file, html);
+    urls.push(path);
+  };
+
+  console.log("→ 페이지 생성 중...");
+  await add("/", "index.html", homePage());
+  await add("/program/", "program/index.html", programIndex());
+  await add("/outcall/", "outcall/index.html", outcallPage());
+  await add("/guide/", "guide/index.html", guidePage());
+  await add("/about/", "about/index.html", aboutPage());
+  await add("/contact/", "contact/index.html", contactPage());
+
+  // 프로그램 페이지
+  let minLen = Infinity;
+  for (const p of programs) {
+    const { html, len } = programPage(p);
+    minLen = Math.min(minLen, len);
+    await add(programUrl(p.slug), `program/${p.slug}/index.html`, html);
+  }
+
+  // 지역 인덱스 + 페이지
+  await add(
+    "/region/",
+    "region/index.html",
+    placeIndex(
+      regions,
+      "/region/",
+      "지역별 출장마사지 찾기",
+      "지역별 찾기",
+      "서울·강남·부산·수원 등 지역별로 출장마사지 이용 기준과 프로그램을 비교해 확인할 수 있습니다."
+    )
+  );
+  for (const r of regions) {
+    await add(`/region/${r.slug}/`, `region/${r.slug}/index.html`, placePage(r, "/region/"));
+  }
+
+  // 지하철 인덱스 + 페이지
+  await add(
+    "/subway/",
+    "subway/index.html",
+    placeIndex(
+      subways,
+      "/subway/",
+      "지하철역별 출장마사지 찾기",
+      "지하철역별 찾기",
+      "서울 2호선·강남역 등 지하철 노선과 역 기준으로 출장마사지 이용 안내를 확인할 수 있습니다."
+    )
+  );
+  for (const s of subways) {
+    await add(`/subway/${s.slug}/`, `subway/${s.slug}/index.html`, placePage(s, "/subway/"));
+  }
+
+  await copyAssets();
+
+  // robots.txt + sitemap.xml
+  await writeFile(
+    join(DIST, "robots.txt"),
+    `User-agent: *\nAllow: /\nSitemap: ${site.baseUrl}/sitemap.xml\n`,
+    "utf8"
+  );
+  await writeFile(join(DIST, "sitemap.xml"), sitemap(urls), "utf8");
+
+  console.log(`✓ 총 ${urls.length}개 페이지 생성 완료`);
+  console.log(`✓ 프로그램 페이지 최소 본문 길이: ${minLen}자`);
+  console.log(`✓ sitemap.xml / robots.txt 생성 완료`);
+}
+
+build().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

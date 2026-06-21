@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.health-land.co.kr/sitemap.xml
