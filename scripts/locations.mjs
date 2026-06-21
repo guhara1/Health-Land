@@ -6,6 +6,7 @@ import { site } from "../data/site.mjs";
 import { programBySlug } from "../data/programs.mjs";
 import { seoul } from "../data/seoul.mjs";
 import { slugify } from "./romanize.mjs";
+import { dongMeta, branchMeta } from "./region-tree.mjs";
 
 const MODIFIED = "2026-06-21";
 const PROGRAM_PICKS = ["swedish", "aroma-therapy", "thai-massage", "home-care", "foot-massage"];
@@ -173,11 +174,7 @@ function dongPage(gu, dongName, siblings) {
   ${pricingTable()}`;
 
   const html = layout({
-    title: `${dongName} 출장마사지·홈타이 이용 안내 (서울 ${gu.name}) | ${site.name}`,
-    description: `${dongName}(서울 ${gu.name}) 출장마사지·홈타이 방문 권역과 예약 확인 사항을 안내합니다.`.slice(
-      0,
-      80
-    ),
+    ...dongMeta(dongName, "서울", gu.name),
     path,
     body,
     structuredData: [
@@ -312,11 +309,7 @@ function guPage(gu) {
   ${pricingTable()}`;
 
   const html = layout({
-    title: `서울 ${gu.name} 출장마사지·홈타이 이용 안내 | ${site.name}`,
-    description: `서울 ${gu.name} 출장마사지·홈타이 안내와 행정동별 방문 권역, 예약 확인 사항을 정리했습니다.`.slice(
-      0,
-      80
-    ),
+    ...branchMeta("서울 " + gu.name, "행정동"),
     path,
     body,
     structuredData: [

@@ -17,6 +17,47 @@ function seed(str) {
 }
 const pick = (s, arr) => arr[s % arr.length];
 
+// 타이틀·디스크립션 변형 (중복 방지: 지역명 조합 + 시드 기반 문형 변형)
+export function dongMeta(dongName, metro, areaName) {
+  const s = seed(metro + "|" + areaName + "|" + dongName);
+  const titles = [
+    `${dongName} 출장마사지·홈타이 안내 (${metro} ${areaName}) | ${site.name}`,
+    `${metro} ${areaName} ${dongName} 출장마사지·홈타이 이용 안내 | ${site.name}`,
+    `${dongName} 홈타이·출장마사지 방문 안내 — ${areaName} | ${site.name}`,
+    `${dongName} 출장마사지 예약 가이드 (${metro} ${areaName}) | ${site.name}`,
+  ];
+  const descs = [
+    `${metro} ${areaName} ${dongName} 출장마사지·홈타이 방문 권역과 예약 전 확인 사항 안내.`,
+    `${areaName} ${dongName} 출장마사지·홈타이를 찾을 때 볼 방문 권역·예약 기준 안내.`,
+    `${dongName}(${areaName}) 홈타이·출장마사지 이용 흐름과 비용·예약 방법 안내.`,
+    `${areaName} ${dongName} 방문 마사지(홈타이) 프로그램·시간·예약 확인 사항 안내.`,
+    `${dongName} 출장마사지 예약 체크리스트와 인근 동 정보를 ${metro} 기준으로 정리.`,
+  ];
+  return {
+    title: titles[s % titles.length],
+    description: descs[(s >>> 2) % descs.length].slice(0, 80),
+  };
+}
+export function branchMeta(fullName, childLabel) {
+  const s = seed("b|" + fullName);
+  const titles = [
+    `${fullName} 출장마사지·홈타이 이용 안내 | ${site.name}`,
+    `${fullName} 홈타이·출장마사지 — ${childLabel}별 방문 안내 | ${site.name}`,
+    `${fullName} 출장마사지 예약·프로그램 안내 | ${site.name}`,
+    `${fullName} 방문 마사지(홈타이) 이용 가이드 | ${site.name}`,
+  ];
+  const descs = [
+    `${fullName} 출장마사지·홈타이 안내와 ${childLabel}별 방문 권역, 예약 확인 사항 정리.`,
+    `${fullName}에서 출장마사지·홈타이를 ${childLabel}별로 비교하고 예약 기준을 확인하세요.`,
+    `${fullName} 홈타이·출장마사지 프로그램과 이용 시간·비용, 예약 방법을 안내합니다.`,
+    `${fullName} 방문 마사지 이용 흐름과 ${childLabel}별 안내, 예약 전 체크리스트 정리.`,
+  ];
+  return {
+    title: titles[s % titles.length],
+    description: descs[(s >>> 2) % descs.length].slice(0, 80),
+  };
+}
+
 function authorBox() {
   return `
   <aside class="author-box">
@@ -198,11 +239,7 @@ function dongPage(node) {
     path: node.url,
     file: node.url.replace(/^\//, "").replace(/\/$/, "") + "/index.html",
     html: layout({
-      title: `${dongName} 출장마사지·홈타이 이용 안내 (${metro} ${areaName}) | ${site.name}`,
-      description: `${dongName}(${metro} ${areaName}) 출장마사지·홈타이 방문 권역과 예약 확인 사항을 안내합니다.`.slice(
-        0,
-        80
-      ),
+      ...dongMeta(dongName, metro, areaName),
       path: node.url,
       body,
       structuredData: [
@@ -383,11 +420,7 @@ function branchPage(node) {
     path: node.url,
     file: node.url.replace(/^\//, "").replace(/\/$/, "") + "/index.html",
     html: layout({
-      title: `${fullName} 출장마사지·홈타이 이용 안내 | ${site.name}`,
-      description: `${fullName} 출장마사지·홈타이 안내와 ${childLabel}별 방문 권역, 예약 확인 사항을 정리했습니다.`.slice(
-        0,
-        80
-      ),
+      ...branchMeta(fullName, childLabel),
       path: node.url,
       body,
       structuredData: [

@@ -12,9 +12,13 @@ import { buildSeoulPages } from "./locations.mjs";
 import { buildRegionTree } from "./region-tree.mjs";
 import { incheon } from "../data/incheon.mjs";
 import { gyeonggi } from "../data/gyeonggi.mjs";
+import { busan, daegu, gwangju, daejeon, ulsan, sejong, jeju } from "../data/metros.mjs";
 
 // 계층(시·구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
-const HIERARCHICAL = new Set(["seoul", "gyeonggi", "incheon"]);
+const HIERARCHICAL = new Set([
+  "seoul", "gyeonggi", "incheon",
+  "busan", "daegu", "gwangju", "daejeon", "ulsan", "sejong", "jeju",
+]);
 
 // 광역(구→동) 데이터 → 트리 루트
 function metroRoot(m) {
@@ -846,9 +850,15 @@ async function build() {
   await mkdir(DIST, { recursive: true });
 
   const urls = [];
+  const metaTitles = new Map();
+  const metaDescs = new Map();
   const add = async (path, file, html) => {
     await write(file, html);
     urls.push(path);
+    const t = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || "";
+    const d = (html.match(/<meta name="description" content="([^"]*)"/) || [])[1] || "";
+    metaTitles.set(t, (metaTitles.get(t) || 0) + 1);
+    metaDescs.set(d, (metaDescs.get(d) || 0) + 1);
   };
 
   console.log("→ 페이지 생성 중...");
@@ -890,10 +900,17 @@ async function build() {
   }
   console.log(`✓ 서울 계층 페이지 본문 길이: ${seoulMin}~${seoulMax}자`);
 
-  // 경기·인천 계층 페이지 (광역 → 시 → 구 → 행정동)
+  // 광역시·도 계층 페이지 (광역 → 시 → 구 → 행정동)
   for (const [label, root] of [
     ["인천", metroRoot(incheon)],
     ["경기", provinceRoot(gyeonggi)],
+    ["부산", metroRoot(busan)],
+    ["대구", metroRoot(daegu)],
+    ["광주", metroRoot(gwangju)],
+    ["대전", metroRoot(daejeon)],
+    ["울산", metroRoot(ulsan)],
+    ["세종", provinceRoot(sejong)],
+    ["제주", provinceRoot(jeju)],
   ]) {
     let mn = Infinity,
       mx = 0,
@@ -938,6 +955,17 @@ async function build() {
     "utf8"
   );
   await writeFile(join(DIST, "sitemap.xml"), sitemap(urls), "utf8");
+
+  // 타이틀·디스크립션 중복 검사 (중복 금지)
+  const dupT = [...metaTitles.entries()].filter(([, n]) => n > 1);
+  const dupD = [...metaDescs.entries()].filter(([, n]) => n > 1);
+  if (dupT.length || dupD.length) {
+    console.warn(`  ⚠️  중복 타이틀 ${dupT.length}종 / 중복 디스크립션 ${dupD.length}종`);
+    dupT.slice(0, 5).forEach(([t, n]) => console.warn(`     T×${n}: ${t}`));
+    dupD.slice(0, 5).forEach(([d, n]) => console.warn(`     D×${n}: ${d}`));
+  } else {
+    console.log(`✓ 타이틀·디스크립션 중복 없음 (${metaTitles.size}종 고유)`);
+  }
 
   console.log(`✓ 총 ${urls.length}개 페이지 생성 완료`);
   console.log(`✓ 프로그램 페이지 최소 본문 길이: ${minLen}자`);
