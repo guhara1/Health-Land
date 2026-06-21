@@ -49,4 +49,27 @@
       document.body.style.overflow = "";
     }
   });
+
+  // 스크롤 등장 마이크로 인터랙션 (장식 요소에만 적용 — 본문 텍스트는 항상 표시)
+  try {
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var targets = document.querySelectorAll(
+      ".section-head, .card, .price-card, .author-box, .toc, .callout, .chip-row, .pricing-head"
+    );
+    if (!reduce && "IntersectionObserver" in window && targets.length) {
+      targets.forEach(function (el) { el.classList.add("reveal"); });
+      var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("is-visible"); obs.unobserve(e.target); }
+        });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+      targets.forEach(function (el) { io.observe(el); });
+      // 안전장치: 혹시 누락되면 강제 표시
+      window.addEventListener("load", function () {
+        setTimeout(function () {
+          targets.forEach(function (el) { el.classList.add("is-visible"); });
+        }, 1400);
+      });
+    }
+  } catch (e) { /* 실패해도 콘텐츠는 그대로 보임 */ }
 })();
