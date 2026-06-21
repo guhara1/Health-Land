@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { site, primaryNav, programMenu } from "../data/site.mjs";
 import { programs, programBySlug } from "../data/programs.mjs";
 import { extra as programExtra, regionNote } from "../data/programs-extra.mjs";
-import { regions, subways, placeBySlug } from "../data/regions.mjs";
+import { regions, subways, placeBySlug, regionGroups } from "../data/regions.mjs";
 import { layout, esc, faqLd, articleLd } from "../src/templates/layout.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -398,6 +398,70 @@ function placeIndex(list, baseUrl, title, eyebrow, lead) {
   });
 }
 
+// 지역 인덱스 (전국 시·도를 권역별로 그룹화하여 나열)
+function regionIndex() {
+  const lead =
+    "서울·경기·인천·부산·대구·광주·대전 등 전국 시·도별로 출장마사지 이용 기준과 프로그램을 비교해 확인할 수 있습니다.";
+  const groupsHtml = regionGroups
+    .map((g) => {
+      const cards = g.slugs
+        .map((slug) => {
+          const r = placeBySlug[slug];
+          if (!r) return "";
+          return `<a class="card" href="/region/${slug}/">
+            <h3>${esc(r.name)} 출장마사지</h3>
+            <p>${esc((r.intro[0] || "").slice(0, 58))}…</p>
+          </a>`;
+        })
+        .join("\n        ");
+      return `
+      <div class="section-head" style="margin-top:var(--sp-6)"><span class="eyebrow">${esc(
+        g.group
+      )}</span></div>
+      <div class="grid grid-4">${cards}</div>`;
+    })
+    .join("");
+
+  // 전 지역 빠른 이동 칩
+  const chips = regionGroups
+    .flatMap((g) => g.slugs)
+    .map((slug) => {
+      const r = placeBySlug[slug];
+      return `<a class="chip" href="/region/${slug}/">${esc(r.name)}</a>`;
+    })
+    .join("");
+
+  const body = `
+  <section class="hero"><div class="container">
+    <p class="eyebrow">지역별 찾기</p>
+    <h1>전국 지역별 출장마사지 찾기</h1>
+    <p>${esc(lead)}</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold" href="${site.phoneHref}">📞 전화예약 ${esc(
+    site.phone
+  )}</a>
+      <a class="btn btn-outline" href="/program/">프로그램 보기</a>
+    </div>
+  </div></section>
+  <section class="section-tight section-alt"><div class="container">
+    <div class="chip-row">${chips}</div>
+  </div></section>
+  <section class="section"><div class="container">
+    ${groupsHtml}
+  </div></section>`;
+
+  return layout({
+    title: `전국 지역별 출장마사지 찾기 | ${site.name}`,
+    description: "서울·경기·인천·부산·대구 등 전국 시·도별 출장마사지 안내를 확인하세요.",
+    path: "/region/",
+    body,
+    breadcrumb: [
+      { name: "홈", url: "/" },
+      { name: "지역별 찾기", url: "/region/" },
+    ],
+  });
+}
+
 // ---------- 홈 ----------
 function homePage() {
   const topPrograms = ["swedish", "thai-massage", "aroma-therapy", "foot-massage"];
@@ -721,18 +785,8 @@ async function build() {
     await add(programUrl(p.slug), `program/${p.slug}/index.html`, html);
   }
 
-  // 지역 인덱스 + 페이지
-  await add(
-    "/region/",
-    "region/index.html",
-    placeIndex(
-      regions,
-      "/region/",
-      "지역별 출장마사지 찾기",
-      "지역별 찾기",
-      "서울·강남·부산·수원 등 지역별로 출장마사지 이용 기준과 프로그램을 비교해 확인할 수 있습니다."
-    )
-  );
+  // 지역 인덱스 + 페이지 (전국 시·도 권역별 그룹화)
+  await add("/region/", "region/index.html", regionIndex());
   for (const r of regions) {
     await add(`/region/${r.slug}/`, `region/${r.slug}/index.html`, placePage(r, "/region/"));
   }

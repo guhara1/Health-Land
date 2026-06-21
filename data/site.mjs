@@ -26,9 +26,9 @@ export const site = {
 export const primaryNav = [
   { label: "홈", url: "/" },
   { label: "출장마사지", url: "/outcall/" },
-  { label: "지역별 찾기", url: "/region/" },
+  { label: "지역별 찾기", url: "/region/", mega: "region" },
   { label: "지하철역별 찾기", url: "/subway/" },
-  { label: "마사지 프로그램", url: "/program/", mega: true },
+  { label: "마사지 프로그램", url: "/program/", mega: "program" },
   { label: "예약 가이드", url: "/guide/" },
   { label: "이용 안내", url: "/about/" },
   { label: "문의하기", url: "/contact/" },

@@ -1,4 +1,5 @@
 import { site, primaryNav, programMenu } from "../../data/site.mjs";
+import { regionGroups, regionNameBySlug } from "../../data/regions.mjs";
 
 // HTML 이스케이프
 export const esc = (s = "") =>
@@ -10,19 +11,29 @@ export const esc = (s = "") =>
 
 const abs = (url) => (url.startsWith("http") ? url : site.baseUrl + url);
 
+// 메가메뉴 데이터: [{ group, items: [{ label, url }] }]
+const PROGRAM_MEGA = programMenu.map((g) => ({
+  group: g.group,
+  items: g.items.map((i) => ({ label: i.label, url: `/program/${i.slug}/` })),
+}));
+const REGION_MEGA = regionGroups.map((g) => ({
+  group: g.group,
+  items: g.slugs.map((s) => ({
+    label: regionNameBySlug[s] || s,
+    url: `/region/${s}/`,
+  })),
+}));
+
 // 메가메뉴 렌더 (PC 4열 / 모바일 아코디언 공용 마크업)
-function renderMega() {
-  const cols = programMenu
+function renderMega(menu) {
+  const cols = menu
     .map(
       (g) => `
         <div class="mega-col">
           <h4>${esc(g.group)}</h4>
           <ul>
             ${g.items
-              .map(
-                (i) =>
-                  `<li><a href="/program/${i.slug}/">${esc(i.label)}</a></li>`
-              )
+              .map((i) => `<li><a href="${i.url}">${esc(i.label)}</a></li>`)
               .join("\n            ")}
           </ul>
         </div>`
@@ -35,12 +46,18 @@ function renderNav(currentPath) {
   const items = primaryNav
     .map((item) => {
       const active = item.url === currentPath ? ' aria-current="page"' : "";
-      if (item.mega) {
+      const menu =
+        item.mega === "program"
+          ? PROGRAM_MEGA
+          : item.mega === "region"
+          ? REGION_MEGA
+          : null;
+      if (menu) {
         return `<li class="has-mega">
           <a href="${item.url}" aria-haspopup="true" aria-expanded="false"${active}>${esc(
           item.label
         )}</a>
-          ${renderMega()}
+          ${renderMega(menu)}
         </li>`;
       }
       return `<li><a href="${item.url}"${active}>${esc(item.label)}</a></li>`;

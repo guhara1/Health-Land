@@ -27,18 +27,19 @@
     });
   }
 
-  // 모바일에서 "마사지 프로그램" 항목 아코디언 토글
-  var megaParent = document.querySelector(".has-mega");
-  if (megaParent) {
-    var link = megaParent.querySelector(":scope > a");
+  // 모바일에서 메가메뉴(마사지 프로그램 / 지역별 찾기) 아코디언 토글
+  var megaParents = document.querySelectorAll(".has-mega");
+  megaParents.forEach(function (parent) {
+    var link = parent.querySelector(":scope > a");
+    if (!link) return;
     link.addEventListener("click", function (e) {
       if (isMobile()) {
         e.preventDefault();
-        var open = megaParent.classList.toggle("open");
+        var open = parent.classList.toggle("open");
         link.setAttribute("aria-expanded", String(open));
       }
     });
-  }
+  });
 
   // 리사이즈 시 모바일 메뉴 상태 정리
   window.addEventListener("resize", function () {
