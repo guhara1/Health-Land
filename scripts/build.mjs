@@ -122,25 +122,54 @@ function authorBox() {
   </aside>`;
 }
 
-// 지역/안내 내부링크 (롱테일 키워드 — 대상 페이지를 정확히 설명하는 자연스러운 앵커)
-// ctx: 프로그램/페이지 키워드(예: "스웨디시", "홈타이") — 지정 시 지역+프로그램 롱테일 생성
-// 동일 문구 반복(완전 일치 스터핑)을 피하기 위해 의도 표현(예약 안내/방문 안내/이용 안내 등)을 다양화한다.
+// 지역/안내 내부링크
+// 완전 일치 앵커의 반복(과최적화·스팸 신호)을 피하고, 사람이 큐레이션한 듯
+// 자연스럽고 다양한 앵커를 섞는다 — 일부는 키워드, 일부는 평범한 지역명/탐색 표현.
+// ctx: 프로그램 페이지에서 지정 시 지역+프로그램을 자연스럽게 결합.
+// 전국 17개 시·도 — 각기 다른 자연스러운 앵커(일부 키워드 + 평범한 탐색 표현 혼합).
+// 동일 '지역+출장마사지' 패턴의 반복을 피하기 위해 지역마다 표현을 달리한다.
+const REGION_ANCHORS = [
+  ["/region/seoul/", "서울", "출장마사지 안내"],
+  ["/region/gyeonggi/", "경기", "지역 안내"],
+  ["/region/incheon/", "인천", "홈타이·출장마사지"],
+  ["/region/busan/", "부산", "해운대·서면 등"],
+  ["/region/daegu/", "대구", "지역 안내"],
+  ["/region/gwangju/", "광주", "방문 안내"],
+  ["/region/daejeon/", "대전", "출장마사지"],
+  ["/region/ulsan/", "울산", "이용 안내"],
+  ["/region/sejong/", "세종", "지역 안내"],
+  ["/region/gangwon/", "강원", "춘천·원주 등"],
+  ["/region/chungbuk/", "충북", "청주 안내"],
+  ["/region/chungnam/", "충남", "천안 일대"],
+  ["/region/jeonbuk/", "전북", "전주 안내"],
+  ["/region/jeonnam/", "전남", "여수·순천 등"],
+  ["/region/gyeongbuk/", "경북", "포항·경주"],
+  ["/region/gyeongnam/", "경남", "창원·김해 등"],
+  ["/region/jeju/", "제주", "출장마사지·홈타이"],
+];
+
+// 지역/안내 내부링크
+// 완전 일치 앵커의 반복(과최적화·스팸 신호)을 피하고, 사람이 큐레이션한 듯
+// 자연스럽고 다양한 앵커를 섞는다 — 전국 17개 시·도 + 지하철/안내.
+// ctx: 프로그램 페이지에서 지정 시 지역+프로그램을 자연스럽게 결합.
 function regionLinks(ctx) {
-  const k = ctx ? `${ctx} ` : "";
-  const links = [
-    ["/region/seoul/", `서울 ${k}출장마사지 예약 안내`],
-    ["/region/seoul/gangnam/", `강남 ${k}홈타이·출장마사지 방문 안내`],
-    ["/region/gyeonggi/", `경기 ${k}출장마사지 방문 가능 지역`],
-    ["/region/gyeonggi/suwon/", `수원 ${k}출장마사지 예약 안내`],
-    ["/region/incheon/", `인천 ${k}출장마사지 이용 안내`],
-    ["/region/busan/", `부산 ${k}출장마사지·홈타이 안내`],
-    ["/region/daegu/", `대구 ${k}출장마사지 이용 안내`],
-    ["/region/daejeon/", `대전 ${k}출장마사지 예약 안내`],
-    ["/region/gwangju/", `광주 ${k}출장마사지 방문 안내`],
-    ["/subway/line/line2/", `서울 지하철 2호선 ${k}역별 출장마사지`],
-    ["/subway/gangnam/", `강남역 ${k}출장마사지·홈타이 이용`],
-    ["/guide/", `${k}출장마사지 예약 전 체크리스트`],
-  ];
+  const regionPart = ctx
+    ? // 프로그램 페이지: 지역 + 프로그램 자연 결합 (문맥 롱테일)
+      REGION_ANCHORS.map(([u, name]) => [u, `${name} ${ctx}`])
+    : // 일반 페이지: 지역마다 다른 자연스러운 앵커
+      REGION_ANCHORS.map(([u, name, suffix]) => [u, `${name} ${suffix}`]);
+  const tail = ctx
+    ? [
+        ["/subway/line/line2/", `지하철 2호선 ${ctx}`],
+        ["/subway/gangnam/", `강남역 주변 ${ctx}`],
+        ["/guide/", `예약 전 체크리스트`],
+      ]
+    : [
+        ["/subway/line/line2/", `지하철 2호선 역별 안내`],
+        ["/subway/gangnam/", `강남역 주변`],
+        ["/guide/", `예약 전 체크리스트`],
+      ];
+  const links = [...regionPart, ...tail];
   return `<div class="link-cloud">${links
     .map(([u, t]) => `<a href="${u}">${esc(t.replace(/\s+/g, " ").trim())}</a>`)
     .join("")}</div>`;
