@@ -3,7 +3,7 @@
    Pretendard 본문 + Noto Serif KR 헤드라인
    토큰(Primitive) → 시맨틱(Semantic) → 컴포넌트 + 마이크로 인터랙션
    ========================================================= */
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+/* Pretendard 는 HTML head 에서 비차단(async) 로드 */
 
 /* ---------- 1. Primitive 토큰 ---------- */
 :root {
@@ -66,7 +66,7 @@
   --color-on-gold: #15241f;
 
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif;
-  --font-serif: "Noto Serif KR", "Pretendard Variable", serif;
+  --font-serif: var(--font-sans);
 }
 
 /* ---------- 3. 베이스 ---------- */
@@ -85,7 +85,7 @@ img { max-width: 100%; height: auto; display: block; }
 a { color: var(--color-accent); text-decoration: none; transition: color .2s var(--ease); }
 a:hover { color: var(--c-gold-300); }
 
-h1,h2,h3,h4 { font-family: var(--font-serif); line-height: 1.34; letter-spacing: -.01em; color: var(--color-text); font-weight: 600; }
+h1,h2,h3,h4 { font-family: var(--font-sans); line-height: 1.32; letter-spacing: -.025em; color: var(--color-text); font-weight: 700; }
 h1 { font-size: var(--fs-2xl); margin: 0 0 var(--sp-4); }
 h2 { font-size: var(--fs-xl); margin: var(--sp-8) 0 var(--sp-4); }
 h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }

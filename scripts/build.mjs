@@ -991,6 +991,31 @@ async function build() {
   );
   await writeFile(join(DIST, "sitemap.xml"), sitemap(urls), "utf8");
 
+  // llms.txt (AI 에이전트용 — H1 헤더 + 링크 포함 마크다운)
+  const u = site.baseUrl;
+  const llms = `# ${site.name} — 전국 출장마사지·홈타이 정보 안내
+
+${site.legalName}은(는) 전국 출장마사지·홈타이 업체 정보를 정리해 이용자가 예약 전 확인해야 할 기준을 안내하는 정보 플랫폼입니다. 전화예약 ${site.phone}.
+
+## 주요 안내
+- [홈](${u}/)
+- [출장마사지 안내](${u}/outcall/)
+- [마사지 프로그램](${u}/program/)
+- [지역별 찾기](${u}/region/)
+- [지하철역별 찾기](${u}/subway/)
+- [예약 가이드](${u}/guide/)
+- [이용 안내](${u}/about/)
+- [문의하기](${u}/contact/)
+
+## 마사지 프로그램
+${programs.map((p) => `- [${p.label}](${u}/program/${p.slug}/)`).join("\n")}
+
+## 안내
+- 가격·운영 정보는 변동될 수 있으므로 예약 전 직접 확인을 권장합니다.
+- 본 사이트는 건전한 관리 서비스 정보만 안내합니다.
+`;
+  await writeFile(join(DIST, "llms.txt"), llms, "utf8");
+
   // 타이틀·디스크립션 중복 검사 (중복 금지)
   const dupT = [...metaTitles.entries()].filter(([, n]) => n > 1);
   const dupD = [...metaDescs.entries()].filter(([, n]) => n > 1);

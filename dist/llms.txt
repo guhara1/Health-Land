@@ -1,0 +1,41 @@
+# 헬스랜드 — 전국 출장마사지·홈타이 정보 안내
+
+헬스랜드 출장마사지 안내은(는) 전국 출장마사지·홈타이 업체 정보를 정리해 이용자가 예약 전 확인해야 할 기준을 안내하는 정보 플랫폼입니다. 전화예약 0508-202-4711.
+
+## 주요 안내
+- [홈](https://health-land.pages.dev/)
+- [출장마사지 안내](https://health-land.pages.dev/outcall/)
+- [마사지 프로그램](https://health-land.pages.dev/program/)
+- [지역별 찾기](https://health-land.pages.dev/region/)
+- [지하철역별 찾기](https://health-land.pages.dev/subway/)
+- [예약 가이드](https://health-land.pages.dev/guide/)
+- [이용 안내](https://health-land.pages.dev/about/)
+- [문의하기](https://health-land.pages.dev/contact/)
+
+## 마사지 프로그램
+- [스웨디시](https://health-land.pages.dev/program/swedish/)
+- [타이마사지](https://health-land.pages.dev/program/thai-massage/)
+- [아로마테라피](https://health-land.pages.dev/program/aroma-therapy/)
+- [로미로미](https://health-land.pages.dev/program/lomi-lomi/)
+- [중국마사지](https://health-land.pages.dev/program/chinese-massage/)
+- [발마사지](https://health-land.pages.dev/program/foot-massage/)
+- [스포츠&경락](https://health-land.pages.dev/program/sports-kyunglak/)
+- [스킨케어](https://health-land.pages.dev/program/skin-care/)
+- [왁싱](https://health-land.pages.dev/program/waxing/)
+- [홈타이](https://health-land.pages.dev/program/home-care/)
+- [스파/사우나](https://health-land.pages.dev/program/spa-sauna/)
+- [호텔식마사지](https://health-land.pages.dev/program/hotel-style-massage/)
+- [수면가능](https://health-land.pages.dev/program/rest-available/)
+- [24시간](https://health-land.pages.dev/program/24-hour/)
+- [1인샵/2인샵](https://health-land.pages.dev/program/private-shop/)
+- [남성전용](https://health-land.pages.dev/program/men-only/)
+- [여성전용](https://health-land.pages.dev/program/women-only/)
+- [남자관리사](https://health-land.pages.dev/program/male-therapist/)
+- [커플환영](https://health-land.pages.dev/program/couple-friendly/)
+- [신규업소](https://health-land.pages.dev/program/new-shops/)
+- [할인업소](https://health-land.pages.dev/program/discount-shops/)
+- [두리코스](https://health-land.pages.dev/program/duri-course/)
+
+## 안내
+- 가격·운영 정보는 변동될 수 있으므로 예약 전 직접 확인을 권장합니다.
+- 본 사이트는 건전한 관리 서비스 정보만 안내합니다.
