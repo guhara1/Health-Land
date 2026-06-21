@@ -8,6 +8,10 @@ import { programs, programBySlug } from "../data/programs.mjs";
 import { extra as programExtra, regionNote } from "../data/programs-extra.mjs";
 import { regions, subways, placeBySlug, regionGroups } from "../data/regions.mjs";
 import { layout, esc, faqLd, articleLd } from "../src/templates/layout.mjs";
+import { buildSeoulPages } from "./locations.mjs";
+
+// 계층(자치구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
+const HIERARCHICAL = new Set(["seoul"]);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -58,7 +62,7 @@ function authorBox() {
 function regionLinks() {
   const links = [
     ["/region/seoul/", "서울 출장마사지"],
-    ["/region/gangnam/", "강남 출장마사지"],
+    ["/region/seoul/gangnam/", "강남 출장마사지"],
     ["/region/busan/", "부산 출장마사지"],
     ["/region/suwon/", "수원 출장마사지"],
     ["/subway/seoul-line2/", "서울 2호선 출장마사지"],
@@ -788,8 +792,25 @@ async function build() {
   // 지역 인덱스 + 페이지 (전국 시·도 권역별 그룹화)
   await add("/region/", "region/index.html", regionIndex());
   for (const r of regions) {
+    if (HIERARCHICAL.has(r.slug)) continue; // 계층 구조는 별도 생성
     await add(`/region/${r.slug}/`, `region/${r.slug}/index.html`, placePage(r, "/region/"));
   }
+
+  // 서울 계층 페이지 (광역 → 자치구 → 행정동)
+  let seoulMin = Infinity,
+    seoulMax = 0;
+  for (const pg of buildSeoulPages()) {
+    const len = pg.html
+      .split("<main")[1]
+      .split("</main>")[0]
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim().length;
+    seoulMin = Math.min(seoulMin, len);
+    seoulMax = Math.max(seoulMax, len);
+    await add(pg.path, pg.file, pg.html);
+  }
+  console.log(`✓ 서울 계층 페이지 본문 길이: ${seoulMin}~${seoulMax}자`);
 
   // 지하철 인덱스 + 페이지
   await add(

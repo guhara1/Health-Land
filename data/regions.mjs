@@ -30,24 +30,9 @@ export const regions = [
       "원하는 관리 방식에 따라 선택 기준이 달라집니다. 부드러운 오일 관리를 원한다면 스웨디시나 아로마테라피를, 스트레칭 위주의 시원한 관리를 원한다면 타이마사지를 비교해 보세요.",
     ],
     programs: ["swedish", "aroma-therapy", "thai-massage", "home-care", "24-hour"],
-    nearby: ["gangnam", "gyeonggi", "incheon"],
+    nearby: ["gyeonggi", "incheon"],
     closing:
       "집이나 숙소에서 편하게 받는 방식이 필요하다면 홈타이 항목을 함께 확인하면 좋습니다. 늦은 시간 이용을 원한다면 24시간 조건의 실제 예약 가능 여부도 미리 확인하세요.",
-  },
-  {
-    slug: "gangnam",
-    name: "강남",
-    type: "region",
-    h1: "강남 출장마사지 선택 기준과 확인 사항",
-    desc: "강남 출장마사지를 고를 때 프로그램·방문 조건·비용 확인 기준을 정리했습니다.",
-    intro: [
-      "강남구 출장마사지를 찾는 분들은 스웨디시, 아로마테라피, 타이마사지처럼 원하는 관리 방식에 따라 선택 기준이 달라질 수 있습니다. 먼저 어떤 감각의 관리를 원하는지 정하면 선택이 쉬워집니다.",
-      "강남 권역은 방문 수요가 많은 편이라 원하는 시간대의 예약 가능 여부를 미리 확인하는 것이 좋습니다. 방문 소요 시간과 비용 포함 범위도 함께 점검하세요.",
-    ],
-    programs: ["swedish", "aroma-therapy", "thai-massage", "sports-kyunglak", "home-care"],
-    nearby: ["seoul", "gyeonggi"],
-    closing:
-      "집이나 숙소에서 편하게 받고 싶다면 홈타이 항목을 함께 확인하면 좋습니다. 강한 압을 선호한다면 스포츠·경락 관리도 비교해 보세요.",
   },
   {
     slug: "gyeonggi",
@@ -314,7 +299,7 @@ export const regions = [
 
 // 메가메뉴 / 지역 인덱스 그룹 구성
 export const regionGroups = [
-  { group: "수도권", slugs: ["seoul", "gangnam", "gyeonggi", "suwon", "incheon"] },
+  { group: "수도권", slugs: ["seoul", "gyeonggi", "suwon", "incheon"] },
   { group: "강원·충청", slugs: ["gangwon", "daejeon", "sejong", "chungbuk", "chungnam"] },
   { group: "호남", slugs: ["gwangju", "jeonbuk", "jeonnam"] },
   { group: "영남·제주", slugs: ["busan", "daegu", "ulsan", "gyeongbuk", "gyeongnam", "jeju"] },
