@@ -1,7 +1,7 @@
 // 서울 계층(광역 → 자치구 → 행정동) 페이지 생성기
 // - 각 페이지 2000~2500자 목표
 // - 구별 실제 정보(역·랜드마크·특징) + 동별 인접 동 목록을 주입해 고유성 확보
-import { layout, esc, faqLd, articleLd, pricingTable, pricingLd } from "../src/templates/layout.mjs";
+import { layout, esc, faqLd, articleLd, pricingTable, pricingLd, reviewsSection } from "../src/templates/layout.mjs";
 import { site } from "../data/site.mjs";
 import { programBySlug } from "../data/programs.mjs";
 import { seoul } from "../data/seoul.mjs";
@@ -171,6 +171,7 @@ function dongPage(gu, dongName, siblings) {
     ${authorBox()}
     ${ctaBtn(dongName + " 출장마사지")}
   </div></article>
+  ${reviewsSection()}
   ${pricingTable()}`;
 
   const html = layout({
@@ -306,6 +307,7 @@ function guPage(gu) {
     ${authorBox()}
     ${ctaBtn("서울 " + gu.name + " 출장마사지")}
   </div></article>
+  ${reviewsSection()}
   ${pricingTable()}`;
 
   const html = layout({
@@ -378,6 +380,7 @@ function seoulOverviewPage() {
     </div>
     ${authorBox()}
   </div></section>
+  ${reviewsSection()}
   ${pricingTable()}`;
 
   return {

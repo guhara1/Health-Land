@@ -1,7 +1,7 @@
 // 범용 지역 계층 생성기 (광역 → 시 → 구 → 행정동, 임의 깊이)
 // - 경기(시→구→동 / 시→동), 인천(구·군→동) 등에 사용
 // - 각 페이지 2000~2500자 목표, 구/동별 실제 정보 + 인접 동 + 문장 변형으로 도어웨이 방지
-import { layout, esc, faqLd, articleLd, pricingTable, pricingLd } from "../src/templates/layout.mjs";
+import { layout, esc, faqLd, articleLd, pricingTable, pricingLd, reviewsSection } from "../src/templates/layout.mjs";
 import { site } from "../data/site.mjs";
 import { programBySlug } from "../data/programs.mjs";
 import { slugify } from "./romanize.mjs";
@@ -233,6 +233,7 @@ function dongPage(node) {
     ${authorBox()}
     ${ctaBtn(dongName + " 출장마사지")}
   </div></article>
+  ${reviewsSection()}
   ${pricingTable()}`;
 
   return {
@@ -402,7 +403,8 @@ function branchPage(node) {
     <section class="section section-alt"><div class="container prose">
       ${secFeature}${secWho}${secCompare}${secGuide}${secPrograms}${secBooking}${secChecklist}${secFaq}
     </div></section>
-    ${pricingTable()}`;
+    ${reviewsSection()}
+  ${pricingTable()}`;
   } else {
     body = `
     ${bcNav(node)}
@@ -413,7 +415,8 @@ function branchPage(node) {
       ${childSection}
       ${secPrograms}${secBooking}${secChecklist}${secFaq}
     </div></article>
-    ${pricingTable()}`;
+    ${reviewsSection()}
+  ${pricingTable()}`;
   }
 
   return {

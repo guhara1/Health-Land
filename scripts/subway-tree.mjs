@@ -2,7 +2,7 @@
 // - 시스템(수도권/부산/대구/광주/대전 등)별 레지스트리 → 같은 도시 내에서만 환승 통합
 // - 도시 간 동일 역명(서울 시청 ≠ 부산 시청)은 별개 페이지로 분리, 메타 고유화
 // - /subway/(인덱스) → /subway/line/{노선}/ → /subway/{역}/ (역 정규 페이지)
-import { layout, esc, faqLd, articleLd, pricingTable, pricingLd } from "../src/templates/layout.mjs";
+import { layout, esc, faqLd, articleLd, pricingTable, pricingLd, reviewsSection } from "../src/templates/layout.mjs";
 import { site } from "../data/site.mjs";
 import { programBySlug } from "../data/programs.mjs";
 import { slugify } from "./romanize.mjs";
@@ -138,6 +138,7 @@ function stationPage(reg, sys) {
     ${authorBox()}
     ${ctaBtn(station + " 출장마사지")}
   </div></article>
+  ${reviewsSection()}
   ${pricingTable()}`;
 
   const path = `/subway/${reg.slug}/`;
@@ -222,6 +223,7 @@ function linePage(line, sys) {
     ${authorBox()}
     ${ctaBtn(line.name + " 출장마사지")}
   </div></article>
+  ${reviewsSection()}
   ${pricingTable()}`;
 
   const path = `/subway/line/${line.slug}/`;

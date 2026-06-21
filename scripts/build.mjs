@@ -7,7 +7,7 @@ import { site, primaryNav, programMenu } from "../data/site.mjs";
 import { programs, programBySlug } from "../data/programs.mjs";
 import { extra as programExtra, regionNote } from "../data/programs-extra.mjs";
 import { regions, subways, placeBySlug, regionGroups } from "../data/regions.mjs";
-import { layout, esc, faqLd, articleLd, pricingTable, pricingLd } from "../src/templates/layout.mjs";
+import { layout, esc, faqLd, articleLd, pricingTable, pricingLd, reviewsSection } from "../src/templates/layout.mjs";
 import { buildSeoulPages } from "./locations.mjs";
 import { buildRegionTree } from "./region-tree.mjs";
 import { incheon } from "../data/incheon.mjs";
@@ -427,6 +427,7 @@ function placePage(r, baseUrl) {
     r.name
   )} 출장마사지 전화예약 ${esc(site.phone)}</a></p>
   </div></article>
+  ${reviewsSection()}
   ${pricingTable()}`;
 
   const path = `${baseUrl}${r.slug}/`;
@@ -596,6 +597,7 @@ function homePage() {
     <p style="margin-top:var(--sp-5)"><a class="btn btn-outline" href="/program/">전체 마사지 프로그램 보기</a></p>
   </div></section>
 
+  ${reviewsSection()}
   ${pricingTable()}
 
   <section class="section section-alt"><div class="container">

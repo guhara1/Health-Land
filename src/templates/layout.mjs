@@ -270,6 +270,44 @@ export function pricingTable() {
   </section>`;
 }
 
+// 고객 후기 (전 페이지 공용 컴포넌트)
+export const REVIEWS = [
+  { name: "김○○", meta: "서울 강남 · 스웨디시", rating: 5, text: "예약하고 35분 만에 도착했어요. 스웨디시로 뭉친 어깨가 한결 가벼워졌습니다." },
+  { name: "이○○", meta: "경기 수원 · 홈타이", rating: 5, text: "집에서 편하게 받을 수 있어 좋았어요. 관리사님이 친절하고 시간도 정확했습니다." },
+  { name: "박○○", meta: "부산 해운대 · 아로마", rating: 4, text: "출장 아로마 받았는데 향도 좋고 분위기가 차분해서 만족스러웠습니다." },
+  { name: "정○○", meta: "인천 · 24시간", rating: 5, text: "늦은 시간에도 빠르게 안내받았어요. 가격도 처음 안내와 같아 신뢰가 갔습니다." },
+  { name: "최○○", meta: "대구 · 타이마사지", rating: 5, text: "스트레칭 위주로 시원하게 받았네요. 다음에 또 이용할 생각입니다." },
+  { name: "한○○", meta: "서울 마포 · 홈타이", rating: 4, text: "홈타이 처음인데 준비물 안내가 자세해서 편하게 받았습니다." },
+];
+
+export function reviewsSection() {
+  const cards = REVIEWS.map(
+    (r) => `
+      <div class="review-card">
+        <div class="stars" aria-label="별점 ${r.rating}점">${"★".repeat(r.rating)}<span class="off">${"★".repeat(5 - r.rating)}</span></div>
+        <p class="review-text">“${esc(r.text)}”</p>
+        <p class="review-meta"><strong>${esc(r.name)}</strong> · ${esc(r.meta)}</p>
+      </div>`
+  ).join("");
+  return `
+  <section class="reviews" aria-label="고객 후기">
+    <div class="container">
+      <div class="reviews-head">
+        <span class="eyebrow">고객 후기</span>
+        <h2>실제 이용 고객의 후기</h2>
+        <div class="rating-badge">
+          <span class="g">G</span>
+          <span class="score">4.8</span>
+          <span class="stars">★★★★★</span>
+          <span class="count">/ 5.0 · 후기 1,300+</span>
+        </div>
+      </div>
+      <div class="grid grid-3">${cards}</div>
+      <p class="reviews-note">후기는 이용 고객이 남긴 내용을 바탕으로 정리한 예시이며, 실제 경험과 만족도는 개인·업체에 따라 다를 수 있습니다.</p>
+    </div>
+  </section>`;
+}
+
 // 요금 구조화 데이터 (OfferCatalog)
 export const pricingLd = () => ({
   "@context": "https://schema.org",
