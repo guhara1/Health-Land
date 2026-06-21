@@ -15,11 +15,22 @@ const DIST = join(ROOT, "dist");
 
 const MODIFIED = "2026-06-21";
 
+// 프로젝트 GitHub Pages 등 하위 경로 배포를 위한 베이스 경로
+// (예: BASE_PATH=/health-land). 루트 도메인 배포 시 빈 값.
+const BASE = (process.env.BASE_PATH || "").replace(/\/$/, "");
+
+// 페이지 내 루트 상대 링크(href/src="/...")에 베이스 경로를 적용.
+// http(s) 절대 URL(canonical/og/JSON-LD)과 //프로토콜 상대 URL은 건드리지 않음.
+function applyBase(html) {
+  if (!BASE) return html;
+  return html.replace(/(href|src)="\/(?!\/)/g, `$1="${BASE}/`);
+}
+
 // ---------- 유틸 ----------
 async function write(path, html) {
   const full = join(DIST, path);
   await mkdir(dirname(full), { recursive: true });
-  await writeFile(full, html, "utf8");
+  await writeFile(full, applyBase(html), "utf8");
 }
 
 const programUrl = (slug) => `/program/${slug}/`;

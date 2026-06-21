@@ -3,8 +3,8 @@ export const site = {
   name: "헬스랜드",
   legalName: "헬스랜드 출장마사지 안내",
   tagline: "전국 출장마사지·홈케어 정보 안내 플랫폼",
-  // 검색 색인용 기본 도메인 (배포 시 실제 도메인으로 교체)
-  baseUrl: "https://www.health-land.co.kr",
+  // 검색 색인용 기본 도메인 (배포 시 환경변수 SITE_URL 로 교체, 기본값은 GitHub Pages)
+  baseUrl: process.env.SITE_URL || "https://guhara1.github.io/health-land",
   phone: "0508-202-4711",
   phoneHref: "tel:0508-202-4711",
   email: "help@health-land.co.kr",
