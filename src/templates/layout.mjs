@@ -114,7 +114,7 @@ function renderFooter() {
         <p>© ${new Date().getFullYear()} ${esc(site.name)}. 전화예약 ${esc(
     site.phone
   )}</p>
-        <p class="disclaimer">본 사이트는 출장마사지·홈케어 업체 정보를 안내하는 플랫폼이며, 모든 가격·운영 정보는 변동될 수 있으므로 예약 전 업체에 직접 확인하시기 바랍니다. 건전한 관리 서비스만을 안내합니다.</p>
+        <p class="disclaimer">본 사이트는 출장마사지·홈타이 업체 정보를 안내하는 플랫폼이며, 모든 가격·운영 정보는 변동될 수 있으므로 예약 전 업체에 직접 확인하시기 바랍니다. 건전한 관리 서비스만을 안내합니다.</p>
       </div>
     </div>
   </footer>

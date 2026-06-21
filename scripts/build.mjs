@@ -87,6 +87,12 @@ function programPage(p) {
   const notesBlock = ex.notes
     ? `<h2 id="notes">더 알아두면 좋은 점·주의사항</h2><p>${esc(ex.notes)}</p>`
     : "";
+  // 홈타이 페이지 자체에서는 '홈타이와 비교'가 순환이 되므로 비교 대상을 매장 마사지로 둔다.
+  const isHometaiPage = p.slug === "home-care";
+  const hometaiH2 = isHometaiPage ? "매장 마사지와 비교할 점" : "홈타이와 함께 비교할 점";
+  const hometaiToc = isHometaiPage
+    ? "매장 마사지와 비교할 부분"
+    : "홈타이 이용 시 비교할 부분";
 
   const body = `
   <nav class="breadcrumb container" aria-label="위치">
@@ -108,7 +114,7 @@ function programPage(p) {
           <li><a href="#flow">이용 흐름과 관리 구성</a></li>
           <li><a href="#who">이런 분들이 많이 찾는 경우</a></li>
           <li><a href="#outcall">출장마사지와 함께 볼 때 확인할 점</a></li>
-          <li><a href="#hometai">홈타이 이용 시 비교할 부분</a></li>
+          <li><a href="#hometai">${hometaiToc}</a></li>
           <li><a href="#notes">더 알아두면 좋은 점·주의사항</a></li>
           <li><a href="#checklist">예약 전 체크리스트</a></li>
           <li><a href="#region">지역별 관련 페이지</a></li>
@@ -128,7 +134,7 @@ function programPage(p) {
       <h2 id="outcall">출장마사지로 이용할 때 확인할 부분</h2>
       <p>${esc(p.outcall)}</p>
 
-      <h2 id="hometai">홈타이와 함께 비교할 점</h2>
+      <h2 id="hometai">${hometaiH2}</h2>
       <p>${esc(p.hometai)}</p>
       ${notesBlock}
 
@@ -229,7 +235,7 @@ function programIndex() {
     <div class="container">
       <p class="eyebrow">마사지 프로그램</p>
       <h1>관리 방식·이용 조건별 마사지 프로그램 안내</h1>
-      <p>스웨디시·타이마사지·아로마테라피 등 관리 방식부터 홈케어(방문)·24시간 같은 이용 조건까지, 예약 전 비교 기준을 정리했습니다.</p>
+      <p>스웨디시·타이마사지·아로마테라피 등 관리 방식부터 홈타이·24시간 같은 이용 조건까지, 예약 전 비교 기준을 정리했습니다.</p>
       <div class="hero-actions">
         <a class="btn btn-gold" href="${site.phoneHref}">📞 전화예약 ${esc(
     site.phone
@@ -245,7 +251,7 @@ function programIndex() {
   return layout({
     title: `마사지 프로그램 안내 | ${site.name}`,
     description:
-      "스웨디시·타이마사지·아로마 등 마사지 프로그램과 홈케어·24시간 이용 조건을 비교 안내합니다.",
+      "스웨디시·타이마사지·아로마 등 마사지 프로그램과 홈타이·24시간 이용 조건을 비교 안내합니다.",
     path: "/program/",
     body,
     breadcrumb: [
@@ -417,8 +423,8 @@ function homePage() {
   <section class="hero">
     <div class="container">
       <p class="eyebrow">${esc(site.tagline)}</p>
-      <h1>믿고 이용하는 출장마사지·홈케어 정보, 헬스랜드</h1>
-      <p>스웨디시·타이마사지·아로마테라피부터 홈케어(방문)·24시간 이용까지. 예약 전 꼭 확인할 기준을 정리해 안내합니다. 가격·운영 정보는 변동될 수 있으니 예약 전 직접 확인하세요.</p>
+      <h1>믿고 이용하는 출장마사지·홈타이 정보, 헬스랜드</h1>
+      <p>스웨디시·타이마사지·아로마테라피부터 홈타이·24시간 이용까지. 예약 전 꼭 확인할 기준을 정리해 안내합니다. 가격·운영 정보는 변동될 수 있으니 예약 전 직접 확인하세요.</p>
       <div class="hero-actions">
         <a class="btn btn-gold" href="${site.phoneHref}">📞 전화예약 ${esc(
     site.phone
@@ -475,7 +481,7 @@ function homePage() {
   return layout({
     title: `${site.name} | ${site.tagline}`,
     description:
-      "스웨디시·타이·아로마 등 출장마사지와 홈케어 정보를 예약 전 확인 기준 중심으로 안내합니다.",
+      "스웨디시·타이·아로마 등 출장마사지와 홈타이 정보를 예약 전 확인 기준 중심으로 안내합니다.",
     path: "/",
     body,
   });
@@ -539,7 +545,7 @@ function outcallPage() {
         <li>위생 관리와 응대 방식</li>
       </ul>
       <h2>관리 방식별로 비교하기</h2>
-      <p>부드러운 오일 관리를 원한다면 <a href="/program/swedish/">스웨디시</a>나 <a href="/program/aroma-therapy/">아로마테라피</a>, 스트레칭 위주라면 <a href="/program/thai-massage/">타이마사지</a>, 부분 관리는 <a href="/program/foot-massage/">발마사지</a>를 비교해 보세요. 방문 이용 방식은 <a href="/program/home-care/">홈케어(방문)</a> 페이지에서 자세히 확인할 수 있습니다.</p>
+      <p>부드러운 오일 관리를 원한다면 <a href="/program/swedish/">스웨디시</a>나 <a href="/program/aroma-therapy/">아로마테라피</a>, 스트레칭 위주라면 <a href="/program/thai-massage/">타이마사지</a>, 부분 관리는 <a href="/program/foot-massage/">발마사지</a>를 비교해 보세요. 방문 이용 방식은 <a href="/program/home-care/">홈타이</a> 페이지에서 자세히 확인할 수 있습니다.</p>
       <h2>지역별 출장마사지</h2>
       ${regionLinks()}`,
     faqs: [
@@ -604,7 +610,7 @@ function aboutPage() {
     h1: "헬스랜드 이용 안내와 편집·운영 정책",
     desc: "헬스랜드 소개와 편집·운영 정책, 정보 신뢰성에 대한 안내를 정리했습니다.",
     sections: `
-      <p>${esc(site.legalName)}은(는) 전국 출장마사지·홈케어 업체 정보를 정리해 이용자가 예약 전 확인해야 할 기준을 안내하는 플랫폼입니다.</p>
+      <p>${esc(site.legalName)}은(는) 전국 출장마사지·홈타이 업체 정보를 정리해 이용자가 예약 전 확인해야 할 기준을 안내하는 플랫폼입니다.</p>
       <h2>편집·운영 정책</h2>
       <p>${esc(site.editorialPolicy)}</p>
       <h2>정보 신뢰성</h2>
@@ -622,7 +628,7 @@ function aboutPage() {
     faqs: [
       {
         q: "헬스랜드는 어떤 사이트인가요?",
-        a: "출장마사지·홈케어 업체 정보를 정리하고 예약 전 확인 기준을 안내하는 정보 플랫폼입니다.",
+        a: "출장마사지·홈타이 업체 정보를 정리하고 예약 전 확인 기준을 안내하는 정보 플랫폼입니다.",
       },
       {
         q: "정보는 얼마나 자주 업데이트되나요?",
@@ -672,7 +678,7 @@ async function copyAssets() {
     await copyFile(join(src, f), join(dest, f));
   }
   // 기본 OG 이미지 / 파비콘(SVG)
-  const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c2a26"/><stop offset="1" stop-color="#1b463d"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1010" cy="120" r="220" fill="#c9a96a" opacity="0.15"/><text x="80" y="300" font-family="Pretendard, sans-serif" font-size="84" font-weight="800" fill="#faf7f1">헬스랜드</text><text x="80" y="390" font-family="Pretendard, sans-serif" font-size="40" fill="#e3cfa3">출장마사지·홈케어 정보 안내</text><text x="80" y="470" font-family="Pretendard, sans-serif" font-size="36" font-weight="700" fill="#8fb3a8">전화예약 0508-202-4711</text></svg>`;
+  const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c2a26"/><stop offset="1" stop-color="#1b463d"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><circle cx="1010" cy="120" r="220" fill="#c9a96a" opacity="0.15"/><text x="80" y="300" font-family="Pretendard, sans-serif" font-size="84" font-weight="800" fill="#faf7f1">헬스랜드</text><text x="80" y="390" font-family="Pretendard, sans-serif" font-size="40" fill="#e3cfa3">출장마사지·홈타이 정보 안내</text><text x="80" y="470" font-family="Pretendard, sans-serif" font-size="36" font-weight="700" fill="#8fb3a8">전화예약 0508-202-4711</text></svg>`;
   await writeFile(join(dest, "og-default.svg"), og, "utf8");
   const fav = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#12352f"/><text x="32" y="42" text-anchor="middle" font-family="Pretendard, sans-serif" font-size="28" font-weight="800" fill="#c9a96a">HL</text></svg>`;
   await writeFile(join(dest, "favicon.svg"), fav, "utf8");

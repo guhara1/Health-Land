@@ -2,7 +2,7 @@
 export const site = {
   name: "헬스랜드",
   legalName: "헬스랜드 출장마사지 안내",
-  tagline: "전국 출장마사지·홈케어 정보 안내 플랫폼",
+  tagline: "전국 출장마사지·홈타이 정보 안내 플랫폼",
   // 검색 색인용 기본 도메인 (배포 시 환경변수 SITE_URL 로 교체, 기본값은 GitHub Pages)
   baseUrl: process.env.SITE_URL || "https://guhara1.github.io/health-land",
   phone: "0508-202-4711",
@@ -14,7 +14,7 @@ export const site = {
     name: "헬스랜드 편집팀",
     role: "출장마사지 정보 에디터",
     reviewer: "이용 안내 검수 담당",
-    bio: "헬스랜드 편집팀은 전국 출장마사지·홈케어 업체 정보를 직접 확인·정리하고, 이용자 문의를 바탕으로 안내 기준을 업데이트합니다.",
+    bio: "헬스랜드 편집팀은 전국 출장마사지·홈타이 업체 정보를 직접 확인·정리하고, 이용자 문의를 바탕으로 안내 기준을 업데이트합니다.",
   },
   // 편집/운영 정책 공개 (구글 뉴스/E-E-A-T 신호)
   editorialPolicy:
@@ -53,7 +53,7 @@ export const programMenu = [
   {
     group: "방문·이용 방식",
     items: [
-      { label: "홈케어(방문)", slug: "home-care" },
+      { label: "홈타이", slug: "home-care" },
       { label: "스파/사우나", slug: "spa-sauna" },
       { label: "호텔식마사지", slug: "hotel-style-massage" },
       { label: "수면가능", slug: "rest-available" },

@@ -15,7 +15,7 @@ export const regions = [
     programs: ["swedish", "aroma-therapy", "thai-massage", "home-care", "24-hour"],
     nearby: ["gangnam", "suwon"],
     closing:
-      "자택이나 숙소에서 편하게 이용하는 방식이 필요하다면 홈케어(방문) 항목을 함께 확인하면 좋습니다. 늦은 시간 이용을 원한다면 24시간 조건의 실제 예약 가능 여부도 미리 확인하세요.",
+      "자택이나 숙소에서 편하게 이용하는 방식이 필요하다면 홈타이 항목을 함께 확인하면 좋습니다. 늦은 시간 이용을 원한다면 24시간 조건의 실제 예약 가능 여부도 미리 확인하세요.",
   },
   {
     slug: "gangnam",
@@ -30,7 +30,7 @@ export const regions = [
     programs: ["swedish", "aroma-therapy", "thai-massage", "sports-kyunglak", "home-care"],
     nearby: ["seoul"],
     closing:
-      "자택이나 숙소에서 편하게 이용하는 방식이 필요하다면 홈케어(방문) 항목을 함께 확인하면 좋습니다. 강한 압을 선호한다면 스포츠·경락 관리도 비교해 보세요.",
+      "자택이나 숙소에서 편하게 이용하는 방식이 필요하다면 홈타이 항목을 함께 확인하면 좋습니다. 강한 압을 선호한다면 스포츠·경락 관리도 비교해 보세요.",
   },
   {
     slug: "busan",
@@ -40,12 +40,12 @@ export const regions = [
     desc: "부산 출장마사지를 찾을 때 권역·프로그램·예약 조건 확인 기준을 정리했습니다.",
     intro: [
       "부산은 권역이 넓어 해운대·서면 등 위치에 따라 방문 소요 시간이 달라질 수 있습니다. 출장마사지를 예약할 때는 방문 가능 권역을 먼저 확인하는 것이 좋습니다.",
-      "관광·출장 등으로 숙소에서 이용하는 경우가 많아, 홈케어(방문) 형태와 호텔식 마사지 안내를 비교해 보는 분들이 많습니다.",
+      "관광·출장 등으로 숙소에서 이용하는 경우가 많아, 홈타이 형태와 호텔식 마사지 안내를 비교해 보는 분들이 많습니다.",
     ],
     programs: ["swedish", "aroma-therapy", "thai-massage", "hotel-style-massage", "home-care"],
     nearby: [],
     closing:
-      "숙소에서 편하게 이용하고 싶다면 홈케어(방문)와 호텔식 마사지 안내를 함께 확인하면 좋습니다. 늦은 시간 이용이 필요하면 24시간 조건도 점검하세요.",
+      "숙소에서 편하게 이용하고 싶다면 홈타이와 호텔식 마사지 안내를 함께 확인하면 좋습니다. 늦은 시간 이용이 필요하면 24시간 조건도 점검하세요.",
   },
   {
     slug: "suwon",
@@ -60,7 +60,7 @@ export const regions = [
     programs: ["swedish", "foot-massage", "aroma-therapy", "home-care", "thai-massage"],
     nearby: ["seoul"],
     closing:
-      "전신 관리가 부담스럽다면 발마사지처럼 부분 관리를 먼저 비교해 보세요. 방문 형태가 필요하면 홈케어(방문) 항목을 확인하면 좋습니다.",
+      "전신 관리가 부담스럽다면 발마사지처럼 부분 관리를 먼저 비교해 보세요. 방문 형태가 필요하면 홈타이 항목을 확인하면 좋습니다.",
   },
 ];
 
@@ -78,7 +78,7 @@ export const subways = [
     programs: ["swedish", "aroma-therapy", "thai-massage", "home-care", "24-hour"],
     nearby: ["gangnam-station"],
     closing:
-      "방문 형태로 편하게 이용하고 싶다면 홈케어(방문) 항목을, 늦은 시간 이용이 필요하면 24시간 조건을 함께 확인하세요.",
+      "방문 형태로 편하게 이용하고 싶다면 홈타이 항목을, 늦은 시간 이용이 필요하면 24시간 조건을 함께 확인하세요.",
   },
   {
     slug: "gangnam-station",
@@ -93,7 +93,7 @@ export const subways = [
     programs: ["swedish", "aroma-therapy", "sports-kyunglak", "home-care", "thai-massage"],
     nearby: ["seoul-line2"],
     closing:
-      "강한 압을 선호한다면 스포츠·경락을, 부드러운 이완을 원한다면 아로마테라피를 비교해 보세요. 방문 형태가 필요하면 홈케어(방문)를 확인하면 됩니다.",
+      "강한 압을 선호한다면 스포츠·경락을, 부드러운 이완을 원한다면 아로마테라피를 비교해 보세요. 방문 형태가 필요하면 홈타이를 확인하면 됩니다.",
   },
 ];
 
