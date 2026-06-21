@@ -16,6 +16,8 @@ import { busan, daegu, gwangju, daejeon, ulsan, sejong, jeju } from "../data/met
 import {
   gangwon, chungbuk, chungnam, jeonbuk, jeonnam, gyeongbuk, gyeongnam,
 } from "../data/provinces.mjs";
+import { buildSubwayPages } from "./subway-tree.mjs";
+import { subwayLines } from "../data/subway.mjs";
 
 // 계층(시·구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
 const HIERARCHICAL = new Set([
@@ -130,8 +132,8 @@ function regionLinks(ctx) {
     ["/region/gyeonggi/", `경기 ${k}방문 가능 지역`],
     ["/region/busan/", `부산 ${k}이용 안내`],
     ["/region/gyeonggi/suwon/", `수원 ${k}예약 안내`],
-    ["/subway/seoul-line2/", `서울 2호선 ${k}이용 안내`],
-    ["/subway/gangnam-station/", `강남역 ${k}홈타이`],
+    ["/subway/line/line2/", `서울 2호선 ${k}이용 안내`],
+    ["/subway/gangnam/", `강남역 ${k}홈타이`],
     ["/guide/", `${k}예약 전 체크리스트`],
     ["/about/", `${k}처음 이용 안내`],
   ];
@@ -565,7 +567,7 @@ function homePage() {
 
   const regionChips = [
     ...regions.map((r) => [`/region/${r.slug}/`, `${r.name}`]),
-    ...subways.map((s) => [`/subway/${s.slug}/`, `${s.name}`]),
+    ...subwayLines.slice(0, 9).map((l) => [`/subway/line/${l.slug}/`, `${l.name}`]),
   ]
     .map(([u, t]) => `<a class="chip" href="${u}">${esc(t)}</a>`)
     .join("");
@@ -941,20 +943,16 @@ async function build() {
     console.log(`✓ ${label} 계층 ${cnt}페이지 본문 길이: ${mn}~${mx}자`);
   }
 
-  // 지하철 인덱스 + 페이지
-  await add(
-    "/subway/",
-    "subway/index.html",
-    placeIndex(
-      subways,
-      "/subway/",
-      "지하철역별 출장마사지 찾기",
-      "지하철역별 찾기",
-      "서울 2호선·강남역 등 지하철 노선과 역 기준으로 출장마사지 이용 안내를 확인할 수 있습니다."
-    )
-  );
-  for (const s of subways) {
-    await add(`/subway/${s.slug}/`, `subway/${s.slug}/index.html`, placePage(s, "/subway/"));
+  // 지하철 노선/역 페이지 (인덱스 → 노선 → 역 정규 페이지)
+  {
+    let mn = Infinity, mx = 0, cnt = 0;
+    for (const pg of buildSubwayPages(subwayLines)) {
+      const m = pg.html.split("<main")[1];
+      const len = m ? m.split("</main>")[0].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().length : 0;
+      mn = Math.min(mn, len); mx = Math.max(mx, len); cnt++;
+      await add(pg.path, pg.file, pg.html);
+    }
+    console.log(`✓ 지하철 ${cnt}페이지(노선+역) 본문 길이: ${mn}~${mx}자`);
   }
 
   await copyAssets();
