@@ -9,9 +9,63 @@ import { extra as programExtra, regionNote } from "../data/programs-extra.mjs";
 import { regions, subways, placeBySlug, regionGroups } from "../data/regions.mjs";
 import { layout, esc, faqLd, articleLd, pricingTable, pricingLd } from "../src/templates/layout.mjs";
 import { buildSeoulPages } from "./locations.mjs";
+import { buildRegionTree } from "./region-tree.mjs";
+import { incheon } from "../data/incheon.mjs";
+import { gyeonggi } from "../data/gyeonggi.mjs";
 
-// 계층(자치구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
-const HIERARCHICAL = new Set(["seoul"]);
+// 계층(시·구·행정동) 구조로 생성하는 광역 — 평면 지역 루프에서 제외
+const HIERARCHICAL = new Set(["seoul", "gyeonggi", "incheon"]);
+
+// 광역(구→동) 데이터 → 트리 루트
+function metroRoot(m) {
+  return {
+    kind: "metro",
+    name: m.name,
+    slug: m.slug,
+    intro: m.intro,
+    children: m.districts.map((d) => ({
+      kind: "gu",
+      name: d.name,
+      stations: d.stations,
+      landmarks: d.landmarks,
+      character: d.character,
+      dongs: d.dongs,
+    })),
+  };
+}
+// 도(시→[구]→동) 데이터 → 트리 루트
+function provinceRoot(p) {
+  return {
+    kind: "metro",
+    name: p.name,
+    slug: p.slug,
+    intro: p.intro,
+    children: p.cities.map((c) =>
+      c.districts
+        ? {
+            kind: "si",
+            name: c.name,
+            character: c.character,
+            children: c.districts.map((g) => ({
+              kind: "gu",
+              name: g.name,
+              stations: g.stations,
+              landmarks: g.landmarks,
+              character: g.character,
+              dongs: g.dongs,
+            })),
+          }
+        : {
+            kind: "si",
+            name: c.name,
+            character: c.character,
+            stations: c.stations,
+            landmarks: c.landmarks,
+            dongs: c.dongs,
+          }
+    ),
+  };
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -67,7 +121,7 @@ function regionLinks(ctx) {
     ["/region/seoul/gangnam/", `강남 ${k}출장마사지·홈타이`],
     ["/region/gyeonggi/", `경기 ${k}출장마사지 방문 가능 지역`],
     ["/region/busan/", `부산 ${k}출장마사지 안내`],
-    ["/region/suwon/", `수원 ${k}출장마사지 예약`],
+    ["/region/gyeonggi/suwon/", `수원 ${k}출장마사지 예약`],
     ["/subway/seoul-line2/", `서울 2호선 ${k}출장마사지`],
     ["/subway/gangnam-station/", `강남역 ${k}홈타이 출장마사지`],
     ["/guide/", `${k}출장마사지 예약 전 체크리스트`],
@@ -835,6 +889,29 @@ async function build() {
     await add(pg.path, pg.file, pg.html);
   }
   console.log(`✓ 서울 계층 페이지 본문 길이: ${seoulMin}~${seoulMax}자`);
+
+  // 경기·인천 계층 페이지 (광역 → 시 → 구 → 행정동)
+  for (const [label, root] of [
+    ["인천", metroRoot(incheon)],
+    ["경기", provinceRoot(gyeonggi)],
+  ]) {
+    let mn = Infinity,
+      mx = 0,
+      cnt = 0;
+    for (const pg of buildRegionTree(root)) {
+      const len = pg.html
+        .split("<main")[1]
+        .split("</main>")[0]
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim().length;
+      mn = Math.min(mn, len);
+      mx = Math.max(mx, len);
+      cnt++;
+      await add(pg.path, pg.file, pg.html);
+    }
+    console.log(`✓ ${label} 계층 ${cnt}페이지 본문 길이: ${mn}~${mx}자`);
+  }
 
   // 지하철 인덱스 + 페이지
   await add(

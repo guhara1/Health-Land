@@ -46,24 +46,8 @@ export const regions = [
     ],
     programs: DEFAULT_PROGRAMS,
     nearby: ["seoul", "incheon"],
-    cities: [{ name: "수원", url: "/region/suwon/" }],
     closing:
       "방문 형태가 필요하면 홈타이 항목을, 늦은 시간 이용이 필요하면 24시간 조건을 함께 확인하세요.",
-  },
-  {
-    slug: "suwon",
-    name: "수원",
-    type: "region",
-    h1: "수원 출장마사지 선택 기준과 확인 사항",
-    desc: "수원 출장마사지를 고를 때 방문 권역·프로그램·비용 확인 기준을 정리했습니다.",
-    intro: [
-      "수원과 인근 지역은 방문 권역에 따라 도착 시간이 달라질 수 있어, 예약 시 방문 가능 여부와 소요 시간을 먼저 확인하는 것이 좋습니다.",
-      "처음 이용하는 분들은 부드러운 스웨디시나 발마사지처럼 부담이 적은 프로그램부터 비교해 보는 경우가 많습니다.",
-    ],
-    programs: ["swedish", "foot-massage", "aroma-therapy", "home-care", "thai-massage"],
-    nearby: ["gyeonggi", "seoul"],
-    closing:
-      "전신 관리가 부담스럽다면 발마사지처럼 부분 관리를 먼저 비교해 보세요. 방문 형태가 필요하면 홈타이 항목을 확인하면 좋습니다.",
   },
   {
     slug: "incheon",
