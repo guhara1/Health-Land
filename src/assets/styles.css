@@ -374,11 +374,8 @@ h3 { font-size: var(--fs-lg); margin: var(--sp-6) 0 var(--sp-3); }
 .reviews-head { text-align: center; max-width: 70ch; margin: 0 auto var(--sp-6); }
 .reviews-head .eyebrow { color: var(--c-gold-400); font-weight: 700; font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase; }
 .reviews-head h2 { margin: var(--sp-2) 0 var(--sp-4); }
-.rating-badge { display: inline-flex; align-items: center; gap: var(--sp-2); padding: 8px 16px; border: 1px solid var(--color-border); border-radius: var(--r-pill); background: var(--color-surface); }
-.rating-badge .g { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-serif); font-weight: 700; color: var(--color-on-gold); background: linear-gradient(135deg, var(--c-gold-400), var(--c-gold-600)); font-size: .85rem; }
-.rating-badge .score { font-family: var(--font-serif); font-size: var(--fs-lg); font-weight: 700; color: var(--color-text); }
-.rating-badge .stars { color: var(--c-gold-500); letter-spacing: 1px; font-size: var(--fs-sm); }
-.rating-badge .count { color: var(--color-text-soft); font-size: var(--fs-sm); }
+.reviews-sub { color: var(--color-text-soft); font-size: var(--fs-sm); }
+.reviews-sub strong { color: var(--c-gold-300); }
 .review-card { background: var(--color-surface); border: 1px solid var(--color-border-soft); border-radius: var(--r-md); padding: var(--sp-5); box-shadow: var(--shadow-sm); transition: transform .22s var(--ease), border-color .22s var(--ease); }
 .review-card:hover { transform: translateY(-4px); border-color: var(--color-border); }
 .review-card .stars { color: var(--c-gold-500); letter-spacing: 2px; font-size: var(--fs-sm); }

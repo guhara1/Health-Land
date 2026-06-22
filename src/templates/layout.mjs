@@ -342,17 +342,12 @@ export function reviewsSection() {
   <section class="reviews" aria-label="고객 후기">
     <div class="container">
       <div class="reviews-head">
-        <span class="eyebrow">고객 후기</span>
-        <h2>실제 이용 고객의 후기</h2>
-        <div class="rating-badge">
-          <span class="g">G</span>
-          <span class="score">4.8</span>
-          <span class="stars">★★★★★</span>
-          <span class="count">/ 5.0 · 후기 1,300+</span>
-        </div>
+        <span class="eyebrow">이용 후기 (예시)</span>
+        <h2>이용 흐름을 보여주는 후기 예시</h2>
+        <p class="reviews-sub">아래 후기는 출장마사지·홈타이의 일반적인 이용 흐름을 설명하기 위한 <strong>예시</strong>입니다. 특정 업체에 대한 실제 평점이나 집계가 아닙니다.</p>
       </div>
       <div class="grid grid-3">${cards}</div>
-      <p class="reviews-note">후기는 이용 고객이 남긴 내용을 바탕으로 정리한 예시이며, 실제 경험과 만족도는 개인·업체에 따라 다를 수 있습니다.</p>
+      <p class="reviews-note">실제 경험과 만족도는 지역·업체·이용 조건에 따라 다를 수 있으며, 예약 전 직접 확인을 권장합니다.</p>
     </div>
   </section>`;
 }
