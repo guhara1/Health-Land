@@ -232,7 +232,7 @@ function dongPage(gu, dongName, siblings) {
         path,
         modified: MODIFIED,
       }),
-      pricingLd(),
+      pricingLd(`서울 ${gu.name} ${dongName}`),
     ],
     breadcrumb: [
       { name: "홈", url: "/" },
@@ -393,7 +393,7 @@ function guPage(gu) {
         path,
         modified: MODIFIED,
       }),
-      pricingLd(),
+      pricingLd(`서울 ${gu.name}`),
     ],
     breadcrumb: [
       { name: "홈", url: "/" },
@@ -462,7 +462,7 @@ function seoulOverviewPage() {
       description: "서울 25개 자치구와 행정동별 출장마사지·홈타이 이용 안내를 확인하세요.",
       path: "/region/seoul/",
       body,
-      structuredData: [pricingLd()],
+      structuredData: [pricingLd("서울")],
       breadcrumb: [
         { name: "홈", url: "/" },
         { name: "지역별 찾기", url: "/region/" },

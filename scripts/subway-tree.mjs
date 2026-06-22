@@ -233,7 +233,7 @@ function stationPage(reg, sys) {
       structuredData: [
         faqLd(faqs),
         articleLd({ headline: `${station} 출장마사지·홈타이 이용 안내`, description: `${l1} ${station} 인근 출장마사지·홈타이 이용 안내`, path, modified: MODIFIED }),
-        pricingLd(),
+        pricingLd(`${sysName} ${station}`),
       ],
       breadcrumb: crumb([["홈", "/"], ["지하철역별 찾기", "/subway/"], [l1, `/subway/line/${reg.lines[0].lineSlug}/`], [station, path]]),
     }),
@@ -358,7 +358,7 @@ function linePage(line, sys) {
       description: `${line.name} 역별 출장마사지·홈타이 방문 권역과 예약 확인 사항을 정리했습니다.`.slice(0, 80),
       path,
       body,
-      structuredData: [faqLd(faqs), articleLd({ headline: `${line.name} 역별 출장마사지·홈타이 안내`, description: `${line.name} 역별 출장마사지·홈타이 안내`, path, modified: MODIFIED }), pricingLd()],
+      structuredData: [faqLd(faqs), articleLd({ headline: `${line.name} 역별 출장마사지·홈타이 안내`, description: `${line.name} 역별 출장마사지·홈타이 안내`, path, modified: MODIFIED }), pricingLd(line.name)],
       breadcrumb: crumb([["홈", "/"], ["지하철역별 찾기", "/subway/"], [line.name, path]]),
     }),
   };

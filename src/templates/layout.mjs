@@ -12,6 +12,10 @@ export const esc = (s = "") =>
 
 const abs = (url) => (url.startsWith("http") ? url : site.baseUrl + url);
 
+// 엔티티 그래프용 안정 @id (전 페이지에서 동일하게 참조 → 지식 그래프 연결)
+const ORG_ID = site.baseUrl + "/#organization";
+const WEBSITE_ID = site.baseUrl + "/#website";
+
 // 메가메뉴 데이터: [{ group, items: [{ label, url }] }]
 const PROGRAM_MEGA = programMenu.map((g) => ({
   group: g.group,
@@ -210,18 +214,47 @@ export function layout(o) {
     ? `\n  <link rel="preload" as="image" href="/assets/hero.webp" type="image/webp" fetchpriority="high" />`
     : "";
 
-  // 조직(LocalBusiness) 기본 JSON-LD
-  const orgLd = {
+  // 사이트 전역 엔티티 그래프 — Organization + WebSite (안정적 @id로 상호 연결)
+  // 정보 플랫폼이므로 물리 주소가 없는 Organization으로 정직하게 표현(허위 LocalBusiness 미사용).
+  const graphLd = {
     "@context": "https://schema.org",
-    "@type": "HealthAndBeautyBusiness",
-    name: site.name,
-    description: site.tagline,
-    url: site.baseUrl,
-    telephone: site.phone,
-    image: ogImage,
-    areaServed: "KR",
-    knowsLanguage: "ko",
-    priceRange: "₩90,000~₩180,000",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": ORG_ID,
+        name: site.name,
+        legalName: site.legalName,
+        url: site.baseUrl,
+        description: site.tagline,
+        email: site.email,
+        telephone: site.phone,
+        logo: {
+          "@type": "ImageObject",
+          "@id": site.baseUrl + "/#logo",
+          url: abs("/assets/favicon.svg"),
+          caption: site.name,
+        },
+        image: { "@id": site.baseUrl + "/#logo" },
+        knowsLanguage: "ko",
+        areaServed: { "@type": "Country", name: "대한민국" },
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: site.phone,
+          contactType: "reservations",
+          areaServed: "KR",
+          availableLanguage: ["ko"],
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": WEBSITE_ID,
+        name: site.name,
+        url: site.baseUrl,
+        description: site.tagline,
+        inLanguage: "ko",
+        publisher: { "@id": ORG_ID },
+      },
+    ],
   };
 
   const breadcrumbLd = o.breadcrumb
@@ -273,7 +306,7 @@ export function layout(o) {
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" /></noscript>
   <link rel="stylesheet" href="/assets/styles.css" />
 
-  ${jsonld(orgLd)}
+  ${jsonld(graphLd)}
   ${extra}
 </head>
 <body>
@@ -352,20 +385,30 @@ export function reviewsSection() {
   </section>`;
 }
 
-// 요금 구조화 데이터 (OfferCatalog)
-export const pricingLd = () => ({
+// 요금 구조화 데이터 (Service + Offer) — 지역 페이지는 areaServed에 지역명 전달
+export const pricingLd = (areaServed) => ({
   "@context": "https://schema.org",
   "@type": "Service",
   serviceType: "출장마사지·홈타이",
-  provider: { "@type": "HealthAndBeautyBusiness", name: site.name, telephone: site.phone },
-  areaServed: "KR",
-  offers: PRICING.map((c) => ({
-    "@type": "Offer",
-    name: c.name,
-    price: c.price.replace(/,/g, ""),
+  provider: { "@id": site.baseUrl + "/#organization" },
+  areaServed: areaServed
+    ? { "@type": "AdministrativeArea", name: areaServed }
+    : { "@type": "Country", name: "대한민국" },
+  offers: {
+    "@type": "AggregateOffer",
     priceCurrency: "KRW",
-    description: c.desc,
-  })),
+    lowPrice: "90000",
+    highPrice: "180000",
+    offerCount: PRICING.length,
+    offers: PRICING.map((c) => ({
+      "@type": "Offer",
+      name: c.name,
+      price: c.price.replace(/,/g, ""),
+      priceCurrency: "KRW",
+      description: c.desc,
+      availability: "https://schema.org/InStock",
+    })),
+  },
 });
 
 // FAQPage JSON-LD 헬퍼
@@ -379,13 +422,14 @@ export const faqLd = (faqs) => ({
   })),
 });
 
-// Article JSON-LD 헬퍼 (E-E-A-T: author/reviewer/dateModified)
+// Article JSON-LD 헬퍼 (E-E-A-T: author/reviewer/dateModified, 엔티티 연결)
 export const articleLd = (o) => ({
   "@context": "https://schema.org",
   "@type": "Article",
   headline: o.headline,
   description: o.description,
   image: abs(o.image || "/assets/og-default.svg"),
+  inLanguage: "ko",
   datePublished: o.published || "2026-01-10",
   dateModified: o.modified || "2026-06-21",
   author: {
@@ -393,10 +437,7 @@ export const articleLd = (o) => ({
     name: site.author.name,
     url: site.baseUrl + "/about/",
   },
-  publisher: {
-    "@type": "Organization",
-    name: site.name,
-    url: site.baseUrl,
-  },
+  publisher: { "@id": site.baseUrl + "/#organization" },
+  isPartOf: { "@id": site.baseUrl + "/#website" },
   mainEntityOfPage: abs(o.path),
 });
